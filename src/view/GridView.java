@@ -148,10 +148,20 @@ public class GridView extends JFrame{
 
             Color blockColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
 
-            for (Cell cell : block.getCells()) {
+            /*for (Cell cell : block.getCells()) {
+                //JLayeredPane tmpPanel = new JLayeredPane();
                 labelGrid[cell.getRow()][cell.getCol()].setText(block.getConstraint());
+                //labelGrid[cell.getRow()][cell.getCol()].repaint();
+
                 JTextField cella =  constrainedGrid[cell.getRow()][cell.getCol()];
                 cella.setBackground(blockColor);
+                //tmpPanel.add(cella, JLayeredPane.PALETTE_LAYER);
+                //tmpPanel.add(labelGrid[cell.getRow()][cell.getCol()], JLayeredPane.DEFAULT_LAYER);
+
+
+                //p.add(tmpPanel);
+                //JLayeredPane.putLayer(labelGrid[cell.getRow()][cell.getCol()], 100);
+                //JLayeredPane.putLayer(cella, 0);
 
                 //p.add(labelGrid[cell.getRow()][cell.getCol()], JLayeredPane.PALETTE_LAYER);
             }
@@ -159,7 +169,21 @@ public class GridView extends JFrame{
             add(p);
             //revalidate();
             //repaint();
-            setVisible(true);
+            setVisible(true);*/
+            for (Cell cell : block.getCells()) {
+                labelGrid[cell.getRow()][cell.getCol()].setText(block.getConstraint());
+
+                JTextField cella = constrainedGrid[cell.getRow()][cell.getCol()];
+                cella.setBackground(blockColor);
+
+                p.setLayer(cella, JLayeredPane.DEFAULT_LAYER);
+                p.setLayer(labelGrid[cell.getRow()][cell.getCol()], JLayeredPane.PALETTE_LAYER);
+
+
+        }
+
+        revalidate();
+        repaint();
 
 
             //???????constrainedGrid[first.getRow()][first.getCol()] = new JTextField(res+op);
@@ -267,33 +291,44 @@ public class GridView extends JFrame{
 
     public void loadGamePage(){
         //Finestra di gioco
-        getContentPane().removeAll(); // Rimuovi tutto il contenuto attuale dalla finestra
+        getContentPane().removeAll();
         JLayeredPane p = new JLayeredPane();
-        p.setVisible(true);
-
         p.setLayout(new GridLayout(gridSize, gridSize));
+
         constrainedGrid = new JTextField[gridSize][gridSize];
         labelGrid = new JLabel[gridSize][gridSize];
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 constrainedGrid[row][col] = new JTextField();
-                labelGrid[row][col] = new JLabel();
                 constrainedGrid[row][col].setHorizontalAlignment(JTextField.CENTER);
                 constrainedGrid[row][col].setFont(new Font(constrainedGrid[row][col].getFont().getName(), Font.PLAIN, 20));
-                //p.add(labelGrid[row][col], JLayeredPane.PALETTE_LAYER);
-                add(constrainedGrid[row][col]);
-                p.add(constrainedGrid[row][col], JLayeredPane.DEFAULT_LAYER);
+                //constrainedGrid[row][col].setBounds(getBounds());
+                constrainedGrid[row][col].setBounds(100, 0, 300, 220);
+
+                labelGrid[row][col] = new JLabel();
+                labelGrid[row][col].setFont(new Font(labelGrid[row][col].getFont().getName(), Font.PLAIN, 15));
+                labelGrid[row][col].setHorizontalAlignment(SwingConstants.LEFT);
+                //labelGrid[row][col].setBounds(getBounds());
+                labelGrid[row][col].setBounds(100, 0, 300, 220);
+
+                //crea una JLayeredPane per ogni cella
+                JLayeredPane cellPane = new JLayeredPane();
+                //cellPane.setPreferredSize(new Dimension(400,400));
+                cellPane.setPreferredSize(getBounds().getSize());
+                cellPane.add(constrainedGrid[row][col], JLayeredPane.DEFAULT_LAYER);
+                cellPane.add(labelGrid[row][col], JLayeredPane.PALETTE_LAYER);
 
 
-
+                p.add(cellPane);
             }
         }
+
         add(p);
         controller.setConstraints(p);
-        //revalidate();
-       // repaint();
-        //setVisible(true);
+        revalidate();
+        repaint();
+        setVisible(true);
     }
 
 
