@@ -31,12 +31,33 @@ public class SubBlock extends Block {
     }
 
     public boolean isSatisfied(int[][] grid) {
-        int sub = 0;
-        for (Cell cell : cells) {
-             sub-= grid[cell.getRow()][cell.getCol()];
-        }
 
-        return Math.abs(sub) == result;
+        Cell first = cells.getFirst();
+        int sub = grid[first.getRow()][first.getCol()];
+        for(int i=1; i<cells.size(); i++){
+            int value = grid[cells.get(i).getRow()][cells.get(i).getCol()];
+            sub-=value;
+            if(!checkGrid(cells.get(i), grid)) return false;
+        }
+        return sub == result;
+    }
+
+    private boolean checkGrid(Cell cell, int[][] grid) {
+        int value = grid[cell.getRow()][cell.getCol()];
+
+        for (int i = 0; i < grid.length; i++) {
+            // Controllo sulla riga
+            if (i != cell.getCol() && grid[cell.getRow()][i] == value) {
+                return false;
+
+            }
+            // Controllo sulla colonna
+            if (i != cell.getRow() && grid[i][cell.getCol()] == value) {
+                return false;
+
+            }
+        }
+        return true;
     }
 
     @Override

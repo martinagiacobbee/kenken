@@ -62,22 +62,36 @@ public class GameController {
     }
 
     public boolean check(){
-        //Il controllo ha effetto solo se tutte le celle sono state riempite
+        //Il controllo ha effetto solo se tutte le celle dei blocchi sono state riempite
         for(Block b : grid.getBlocks()){
             System.out.println(b.toString());
             if(!b.isSatisfied(this.grid.getGrid())){
+                grid.clear();
+                System.out.println("Non soddisfatto");
                 return false;
             }
         }
         return true;
     }
 
+    public void setGridValue(int row, int col, int value){
+        grid.setGridValue(row, col, value);
+        System.out.println("Valore impostato sulla griglia: "+value+" in ("+row+","+col+")");
+    }
+
+    public void resetGrid(){
+        grid.clear();
+    }
+
+    public void solve(){
+        this.grid.risolvi();
+    }
+
     public void reset(){
         for(Block b : grid.getBlocks()){
             b.removeAll();
         }
-
-
+        grid.clear();
         this.gridView.resetGrid();
     }
 }

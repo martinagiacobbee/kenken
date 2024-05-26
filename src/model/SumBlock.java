@@ -35,8 +35,28 @@ public class SumBlock extends Block {
         int sum = 0;
         for (Cell cell : cells) {
             sum += grid[cell.getRow()][cell.getCol()];
+            //System.out.println(grid[cell.getRow()][cell.getCol()]);
+            if(!checkGrid(cell, grid)) return false;
         }
         return sum == result;
+    }
+
+    private boolean checkGrid(Cell cell, int[][] grid) {
+        int value = grid[cell.getRow()][cell.getCol()];
+
+        for (int i = 0; i < grid.length; i++) {
+            // Controllo sulla riga
+            if (i != cell.getCol() && grid[cell.getRow()][i] == value) {
+                return false;
+
+            }
+            // Controllo sulla colonna
+            if (i != cell.getRow() && grid[i][cell.getCol()] == value) {
+                    return false;
+
+            }
+        }
+        return true;
     }
 
     @Override
