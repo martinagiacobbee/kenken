@@ -15,12 +15,14 @@ public class GridView extends JFrame {
     private int gridSize;
     private JTextField[][] constrainedGrid;
     private GameController controller;
+    private int[][] grid;
     private int constraints; //numero di blocchi scelto dall'utente
     private Random rand = new Random();
 
 
-    public GridView(int gridSize) {
-        this.gridSize = gridSize;
+    public GridView(int[][] grid) {
+        this.gridSize = grid.length;
+        this.grid = grid;
         setTitle("KenKen Solver");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -135,11 +137,14 @@ public class GridView extends JFrame {
         getContentPane().removeAll(); // Rimuovi tutto il contenuto attuale dalla finestra
         JLayeredPane p = new JLayeredPane();
         p.setVisible(true);
+
         constrainedGrid = new JTextField[gridSize][gridSize];
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 JTextField casella = new JTextField();
                 constrainedGrid[i][j] = casella;
+                int row= i;
+                int col = j;
                 casella.setFont(new Font(casella.getFont().getName(), Font.PLAIN, 20));
                 casella.setHorizontalAlignment(JTextField.CENTER);
                 casella.addActionListener(new ActionListener() {
@@ -149,7 +154,7 @@ public class GridView extends JFrame {
                                                       int num = Integer.parseInt(casella.getText());
                                                       casella.setEditable(false);
                                                       //Aggiungi attributo Block in Cell
-                                                      //controller.addCellInBlock();
+                                                      grid[row][col] = Integer.parseInt(casella.getText());
                                                   } catch (NumberFormatException ex) {
                                                       JOptionPane.showMessageDialog(p, "Inserisci un numero valido.", "Dialog",
                                                               JOptionPane.ERROR_MESSAGE);
@@ -169,19 +174,15 @@ public class GridView extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 if(controller.check()){
-                    System.out.println("Correct");
                     check.setBackground(Color.GREEN);
                     revalidate();
                     repaint();
 
                 }else{
-                    System.out.println("Incorrect");
                     check.setBackground(Color.RED);
                     revalidate();
                     repaint();
-
-
-                    //controller.reset(); //elimino tutto
+                    controller.reset(); //elimino tutto
                 }
             }
 
@@ -343,8 +344,9 @@ public class GridView extends JFrame {
 
 
     public static void main(String[] args) {
-        GridView gridView = new GridView(3);
+
         Grid grid = new Grid(3);
+        GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }
 }

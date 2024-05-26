@@ -64,6 +64,7 @@ public class GameController {
     public boolean check(){
         //Il controllo ha effetto solo se tutte le celle sono state riempite
         for(Block b : grid.getBlocks()){
+            System.out.println(b.toString());
             if(!b.isSatisfied(this.grid.getGrid())){
                 return false;
             }
