@@ -1,5 +1,6 @@
 package model;
 
+import backtracking.Backtracking;
 import view.GridView;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class Grid {
     private int[][] grid;
     private List<Block> blocks;
     private static List<GridView> viewObservers;
+    private Backtracking resolver;
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -37,6 +39,18 @@ public class Grid {
 
     public int getGridValue(int row, int col) {
         return this.grid[row][col];
+    }
+
+    public void clear(){
+        for(int i = 0; i < size; i++){
+            for(int j = 0; j < size; j++){
+                this.grid[i][j] = 0;
+            }
+        }
+    }
+
+    public void setGridValue(int row, int col, int val){
+        this.grid[row][col] = val;
     }
 
     public void addBlock(Block block) {
@@ -65,6 +79,10 @@ public class Grid {
         return blocks;
     }
 
+    public void risolvi(){
+        resolver = new Backtracking(this);
+        resolver.risolvi();
+    }
     public void createRandomBlocks() {
         boolean[][] occupied = new boolean[size][size];
 

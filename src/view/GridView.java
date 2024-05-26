@@ -153,8 +153,10 @@ public class GridView extends JFrame {
                                                   try {
                                                       int num = Integer.parseInt(casella.getText());
                                                       casella.setEditable(false);
-                                                      //Aggiungi attributo Block in Cell
+
+                                                      //imposto i valori sulla griglia della view e ne chiamo l'aggiunta su quella del model tramite controller
                                                       grid[row][col] = Integer.parseInt(casella.getText());
+                                                      controller.setGridValue(row,col, grid[row][col]);
                                                   } catch (NumberFormatException ex) {
                                                       JOptionPane.showMessageDialog(p, "Inserisci un numero valido.", "Dialog",
                                                               JOptionPane.ERROR_MESSAGE);
@@ -182,7 +184,7 @@ public class GridView extends JFrame {
                     check.setBackground(Color.RED);
                     revalidate();
                     repaint();
-                    controller.reset(); //elimino tutto
+                    controller.resetGrid(); //elimino tutto: ricomincia
                 }
             }
 
@@ -195,7 +197,7 @@ public class GridView extends JFrame {
                                      public void mouseClicked(MouseEvent e) {
                                          resetGrid();
                                          check.setBackground(checkColor);
-                                         controller.reset();
+                                         controller.resetGrid();
                                      }
                                  });
 
@@ -204,7 +206,7 @@ public class GridView extends JFrame {
         soluzione.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //controller.solve();
+                controller.solve();
             }
         });
 

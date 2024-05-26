@@ -37,9 +37,27 @@ public class DivBlock extends Block {
         int y = grid[cell2.getRow()][cell2.getCol()];
 
         // Check if division in either direction satisfies the result
-        return (x != 0 && y != 0) &&
+        return ((x != 0 && y != 0) &&
                 ((x / y == result && x % y == 0) ||
-                        (y / x == result && y % x == 0));
+                        (y / x == result && y % x == 0))) && checkGrid(cell1, grid) && checkGrid(cell2, grid);
+    }
+
+    private boolean checkGrid(Cell cell, int[][] grid) {
+        int value = grid[cell.getRow()][cell.getCol()];
+
+        for (int i = 0; i < grid.length; i++) {
+            // Controllo sulla riga
+            if (i != cell.getCol() && grid[cell.getRow()][i] == value) {
+                return false;
+
+            }
+            // Controllo sulla colonna
+            if (i != cell.getRow() && grid[i][cell.getCol()] == value) {
+                return false;
+
+            }
+        }
+        return true;
     }
 
     @Override
