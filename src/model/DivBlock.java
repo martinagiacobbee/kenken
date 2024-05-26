@@ -14,10 +14,17 @@ public class DivBlock extends Block {
         this.cells = new ArrayList<>();
     }
 
-    public void addCell(int row, int col) {
-        this.cells.add(new Cell(row, col));
+    public void addCell(Cell cell) {
+        this.cells.add(cell);
     }
 
+    public void removeCell(Cell cell){
+        this.cells.remove(cell);
+    }
+
+    public void removeAll(){
+        this.cells.clear();
+    }
 
     public boolean isSatisfied(int[][] grid) {
         /*if (cells.size() != 2) {
@@ -56,6 +63,6 @@ public class DivBlock extends Block {
 
     @Override
     public void setCells(List<Cell> cells) {
-        this.cells = List.copyOf(cells);
+        this.cells = new ArrayList<>(cells);
     }
 }

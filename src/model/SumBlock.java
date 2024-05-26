@@ -14,9 +14,18 @@ public class SumBlock extends Block {
         this.constraint = constraint;
     }
 
-    public void addCell(int row, int col) {
-        this.cells.add(new Cell(row, col));
+    public void addCell(Cell cell) {
+        this.cells.add(cell);
     }
+
+    public void removeCell(Cell cell){
+        this.cells.remove(cell);
+    }
+
+    public void removeAll(){
+        cells.clear();
+    }
+
     @Override
     public void setResult(int result) {
         this.result = result;
@@ -46,7 +55,7 @@ public class SumBlock extends Block {
 
     @Override
     public void setCells(List<Cell> cells) {
-        this.cells = List.copyOf(cells);
+        this.cells = new ArrayList<>(cells);
     }
 }
 

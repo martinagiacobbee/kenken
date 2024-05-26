@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Block implements Serializable {
@@ -10,6 +11,18 @@ public abstract class Block implements Serializable {
     public abstract List<Cell> getCells();
     public abstract void setCells(List<Cell> cells);
     public abstract String getConstraint();
+    public abstract void addCell(Cell cell);
+    public abstract void removeCell(Cell cell);
+    public abstract void removeAll();
+
+    public boolean equals(Block b) {
+        if(!( b instanceof Block)) return false;
+        Block b2 = (Block) b;
+        for(Cell c : getCells()) {
+            if(!b2.getCells().contains(c)) return false;
+        }
+        return true;
+    }
 
     //Factory method
     public static Block createBlock(String operator, int result) {

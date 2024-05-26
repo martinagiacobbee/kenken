@@ -14,8 +14,16 @@ public class MulBlock extends Block {
         this.constraint = constraint;
     }
 
-    public void addCell(int row, int col) {
-        this.cells.add(new Cell(row, col));
+    public void addCell(Cell cell) {
+        this.cells.add(cell);
+    }
+
+    public void removeCell(Cell cell){
+        this.cells.remove(cell);
+    }
+
+    public void removeAll(){
+        this.cells.clear();
     }
 
 
@@ -51,7 +59,7 @@ public class MulBlock extends Block {
 
     @Override
     public void setCells(List<Cell> cells) {
-        this.cells = List.copyOf(cells);
+        this.cells = new ArrayList<>(cells);
     }
 }
 
