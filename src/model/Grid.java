@@ -141,8 +141,15 @@ public class Grid implements Serializable {
 
             occupied[row][col] = true;
 
+            int iter=0;
             // Espande il blocco verso l'alto, il basso, la sinistra o la destra
             while (cells.size() < blockSize) {
+                iter++;
+                if(iter>20){
+                    System.out.println("Sono oberato.");
+                    rimanenti=1; //assunzione forte
+                    break;
+                }
                 Cell lastCell = cells.get(cells.size() - 1);
                 int direction = rand.nextInt(4); // 0: su, 1: giù, 2: sinistra, 3: destra
                 int newRow = lastCell.getRow();
@@ -178,10 +185,10 @@ public class Grid implements Serializable {
         }
         System.out.println("Ho terminato l'inizializzazione.");
 
-            for (Block b : blocks) {
-                if(rimanenti != 0)
-                    expandBlock(b, occupied, b.getCells()); //tenta di espandere un blocco per volta
-            }
+        for (Block b : blocks) {
+            if(rimanenti != 0)
+                expandBlock(b, occupied, b.getCells()); //tenta di espandere un blocco per volta
+        }
 
     }
 

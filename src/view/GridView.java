@@ -100,7 +100,7 @@ public class GridView extends JFrame {
                 try {
                     int num = Integer.parseInt(numberBlocks.getText());
                     if (num >= gridSize*gridSize || num < 1) {
-                        JOptionPane.showMessageDialog(p, "Inserisci un numero di vincoli compreso tra 1 e " + (gridSize-1), "Dialog",
+                        JOptionPane.showMessageDialog(p, "Inserisci un numero di vincoli compreso tra 1 e " + (gridSize*gridSize-1), "Dialog",
                                 JOptionPane.ERROR_MESSAGE);
                     } else {
                         numberBlocks.addKeyListener(new KeyAdapter() {

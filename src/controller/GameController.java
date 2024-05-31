@@ -11,7 +11,7 @@ import java.io.*;
 public class GameController implements Serializable {
     private Grid grid; //modello
     private GridView gridView; //vista
-    private static int id=0;
+    private static int id;
 
     public GameController(Grid grid, GridView gridView) {
         this.grid = grid;
@@ -22,8 +22,13 @@ public class GameController implements Serializable {
 
     public void uploadFile(){
         try{
+            BufferedReader br = new BufferedReader(new FileReader("games/lastID.txt"));
+            id = Integer.parseInt(br.readLine());
             id++;
-            String path = "games/number_"+id;
+            PrintWriter pw = new PrintWriter(new FileOutputStream("games/lastID.txt"), true);
+            pw.println(id);
+
+            String path = "games/number_"+id+"_GridSize_"+grid.getSize();
             FileOutputStream file = new FileOutputStream(path);
             ObjectOutputStream oos=new ObjectOutputStream(file);
             oos.writeObject(grid);
