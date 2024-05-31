@@ -153,7 +153,7 @@ public class Backtracking extends Problema<Cell, Integer> {
     @Override
     protected Collection<Integer> scelte(Cell cell) {
         Collection<Integer> cells=new ArrayList<>();
-        for (int i =-1; i<10;i++)
+        for (int i =-1; i<size;i++)
             cells.add(i+1);
         return cells;
     }
