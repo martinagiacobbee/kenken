@@ -13,6 +13,11 @@ public class SubBlock extends Block {
         this.cells = new ArrayList<>();
         this.constraint = constraint;
     }
+
+    public String toString(){
+        return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
+    }
+
     @Override
     public void setResult(int result) {
         this.result = result;

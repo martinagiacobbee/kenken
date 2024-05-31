@@ -14,6 +14,10 @@ public class DivBlock extends Block {
         this.cells = new ArrayList<>();
     }
 
+    public String toString(){
+        return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
+    }
+
     public void addCell(Cell cell) {
         this.cells.add(cell);
     }

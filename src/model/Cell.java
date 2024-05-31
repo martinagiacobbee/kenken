@@ -17,6 +17,10 @@ public class Cell implements Serializable {
         this.block=b;
     }
 
+    public Block getBlock(){
+        return this.block;
+    }
+
     public int getRow() {
         return riga;
     }
