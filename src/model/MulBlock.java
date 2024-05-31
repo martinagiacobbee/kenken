@@ -14,6 +14,10 @@ public class MulBlock extends Block {
         this.constraint = constraint;
     }
 
+    public String toString(){
+        return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
+    }
+
     public void addCell(Cell cell) {
         this.cells.add(cell);
     }

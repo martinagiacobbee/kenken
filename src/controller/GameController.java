@@ -6,31 +6,53 @@ import model.Grid;
 import view.GridView;
 
 import javax.swing.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
 
-public class GameController {
+public class GameController implements Serializable {
     private Grid grid; //modello
     private GridView gridView; //vista
+    private static int id=0;
 
     public GameController(Grid grid, GridView gridView) {
         this.grid = grid;
         this.gridView = gridView;
         this.gridView.setController(this);
-        this.grid.addObserver(gridView); //potenzialmente inutile: il controller fa tutto
+        //this.grid.addObserver(gridView); //potenzialmente inutile: il controller fa tutto
     }
 
-    public void uploadFile(File f){
-
+    public void uploadFile(){
+        try{
+            id++;
+            String path = "games/number_"+id;
+            FileOutputStream file = new FileOutputStream(path);
+            ObjectOutputStream oos=new ObjectOutputStream(file);
+            oos.writeObject(grid);
+            oos.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
-    public void downloadFile(){
-
-    }
 
     public void createNewGameClicked(){
-            gridView.loadSecondPage();
+        gridView.loadSecondPage();
+    }
+    public void createNewGameFile(File f){
+        //carica grid
+        downloadFile(f);
+
+        //invia tutto alla vista
+        gridView.loadViewFromFile(grid);
+    }
+
+    private void downloadFile(File nomeFile) {
+        try{
+            ObjectInputStream ois= new ObjectInputStream(new FileInputStream(nomeFile));
+            this.grid = (Grid) ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException e) {
+            return;
+        }
     }
 
     public void generateBlock(JTextField operando, JTextField risultato) {
@@ -53,9 +75,6 @@ public class GameController {
         }
     }
 
-    public void addBlockForCell(Cell cell, Block block){
-        cell.setBlock(block);
-    }
 
     public void setConstraints(JLayeredPane p){
         gridView.highlightBlocks(grid.getBlocks(),p);
@@ -83,8 +102,8 @@ public class GameController {
         grid.clear();
     }
 
-    public void solve(){
-        this.grid.risolvi();
+    public int[][] solve(){
+        return this.grid.risolvi();
     }
 
     public void reset(){

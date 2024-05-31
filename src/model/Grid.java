@@ -1,55 +1,73 @@
 package model;
 
 import backtracking.Backtracking;
+import controller.GameController;
 import view.GridView;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 //model
-public class Grid {
+public class Grid implements Serializable {
     private Random rand = new Random();
     private int size;
     private int[][] grid;
     private List<Block> blocks;
     private static List<GridView> viewObservers;
     private Backtracking resolver;
+    private int rimanenti;
 
-    public String toString(){
+
+    public Grid(int size) {
+        this.size = size;
+        this.grid = new int[size][size];
+        this.rimanenti= size*size;
+        this.blocks = new LinkedList<Block>();
+        //this.viewObservers = new LinkedList<>();
+    }
+
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < blocks.size(); i++){
-            sb.append("Block of class: "+blocks.get(i).getClass().getName());
+        for (int i = 0; i < blocks.size(); i++) {
+            sb.append("Block of class: " + blocks.get(i).getClass().getName());
             sb.append("  ||  Celle: ");
-            for(Cell c : blocks.get(i).getCells()){
-                sb.append(c.toString()+" ");
+            for (Cell c : blocks.get(i).getCells()) {
+                sb.append(c.toString() + " ");
             }
             sb.append("\n");
         }
 
         return sb.toString();
     }
-    public Grid(int size) {
-        this.size = size;
-        this.grid = new int[size][size];
-        this.blocks = new LinkedList<Block>();
-        this.viewObservers = new LinkedList<>();
-    }
 
     public int getGridValue(int row, int col) {
         return this.grid[row][col];
     }
 
-    public void clear(){
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                this.grid[i][j] = 0;
+    public Cell getCell(int row, int col) {
+        //funziona solo se tutta la griglia è occupata dai blocchi!
+        for (Block b : blocks) {
+            for (Cell c : b.getCells()) {
+                if (c.getRow() == row && c.getCol() == col) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void clear() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                this.grid[i][j] = -1;
             }
         }
     }
 
-    public void setGridValue(int row, int col, int val){
+    public void setGridValue(int row, int col, int val) {
         this.grid[row][col] = val;
     }
 
@@ -58,7 +76,7 @@ public class Grid {
     }
 
     public void notifyObservers() {
-        for(GridView view : viewObservers) {
+        for (GridView view : viewObservers) {
             view.update(this);
         }
     }
@@ -79,15 +97,33 @@ public class Grid {
         return blocks;
     }
 
-    public void risolvi(){
+    private void setBlocks(List<Block> blocks) {
+        this.blocks = blocks;
+    }
+
+    public int[][] risolvi() {
         resolver = new Backtracking(this);
         resolver.risolvi();
+        return resolver.getSoluzione();
     }
+
     public void createRandomBlocks() {
         boolean[][] occupied = new boolean[size][size];
+        initGrid(); //REMOVE
+        int blocchiRimanenti=blocks.size()+1;
+        rimanenti = size*size;
+
 
         for (Block block : blocks) {
-            int blockSize = rand.nextInt(3) + 2; // Dimensione del blocco tra 2 e 4
+            blocchiRimanenti--;
+            int blockSize = rand.nextInt(4) + 1; // Dimensione del blocco tra 1 e 5
+            System.out.println("Blocksize: "+blockSize);
+            int limite = (rimanenti/blocchiRimanenti)+1;
+            System.out.println("Limite: "+limite);
+            while(blockSize>= limite){
+                blockSize = rand.nextInt(4) + 1; //rigenera finchè il numero di celle non è accettabile
+                System.out.println("Blocksize rigenerato: "+blockSize);
+            }
             List<Cell> cells = new ArrayList<>();
 
             // Trova una posizione iniziale non occupata
@@ -95,14 +131,17 @@ public class Grid {
             do {
                 row = rand.nextInt(size);
                 col = rand.nextInt(size);
+               // System.out.println("cella [" + row + ", " + col + "], occupata: "+occupied[row][col]);
             } while (occupied[row][col]);
 
             // Aggiunge la cella di partenza al blocco
-            cells.add(new Cell(row, col));
+            Cell starter = new Cell(row, col);
+            starter.setBlock(block);
+            cells.add(starter);
+
             occupied[row][col] = true;
 
             // Espande il blocco verso l'alto, il basso, la sinistra o la destra
-            //expandBlock(block, occupied, blockSize, cells);
             while (cells.size() < blockSize) {
                 Cell lastCell = cells.get(cells.size() - 1);
                 int direction = rand.nextInt(4); // 0: su, 1: giù, 2: sinistra, 3: destra
@@ -126,85 +165,85 @@ public class Grid {
 
                 // Verifica se la nuova cella è valida e non occupata
                 if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size && !occupied[newRow][newCol]) {
-                    cells.add(new Cell(newRow, newCol));
+                    Cell c = new Cell(newRow, newCol);
+                    cells.add(c);
+                    c.setBlock(block);
                     occupied[newRow][newCol] = true;
                 }
             }
 
             // Assegna le celle al blocco
             block.setCells(cells);
+            rimanenti -= blockSize;
         }
-    }
-}
+        System.out.println("Ho terminato l'inizializzazione.");
 
-        /*verifica che siano tutte occupate
-        while(!allCellsOccupied(occupied)){
-            for(Block block : blocks){
-                if(!canExpandBlock(block.getCells(), occupied, size)){
-                    break;
-                    //expandBlock(block, occupied, blocksize, block.getCells());
-                }else expandBlock(block, occupied, block.getCells().size(), block.getCells());
+            for (Block b : blocks) {
+                if(rimanenti != 0)
+                    expandBlock(b, occupied, b.getCells()); //tenta di espandere un blocco per volta
+            }
+
+    }
+
+    private void initGrid() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                grid[i][j] = -1;
             }
         }
     }
 
-    private void expandBlock(Block block, boolean[][] occupied, int blockSize, List<Cell> cells) {
-        while (cells.size() < blockSize) {
+
+    private void expandBlock(Block block, boolean[][] occupied, List<Cell> cells) {
+        int dim = block.getCells().size()+rimanenti;
+        int lunghezza = block.getCells().size();
+        System.out.println("Lunghezza: "+lunghezza+" Rimanenti: "+rimanenti);
+
+        do{
+            //System.out.println("Lunghezza: "+lunghezza);
             Cell lastCell = cells.get(cells.size() - 1);
-            int direction = rand.nextInt(4); // 0: su, 1: giù, 2: sinistra, 3: destra
             int newRow = lastCell.getRow();
             int newCol = lastCell.getCol();
 
-            switch (direction) {
-                case 0: // su
-                    newRow--;
-                    break;
-                case 1: // giù
-                    newRow++;
-                    break;
-                case 2: // sinistra
-                    newCol--;
-                    break;
-                case 3: // destra
-                    newCol++;
-                    break;
-            }
-
-            // Verifica se la nuova cella è valida e non occupata
-            if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size && !occupied[newRow][newCol]) {
-                cells.add(new Cell(newRow, newCol));
-                occupied[newRow][newCol] = true;
-            }
-        }
-
-        // Assegna le celle al blocco
-        block.setCells(cells);
-    }*/
-
-
-    // Metodo di supporto per verificare se tutte le celle sono occupate
-    /*private boolean allCellsOccupied(boolean[][] occupied) {
-        for (int i = 0; i < occupied.length; i++) {
-            for (int j = 0; j < occupied[i].length; j++) {
-                if (!occupied[i][j]) {
-                    return false;
+            for(int i=0; i<size; i++) {
+                if(!occupied[newRow][i]) {
+                    Cell cell = new Cell(newRow, i);
+                    occupied[newRow][i] = true;
+                    cell.setBlock(block);
+                    block.getCells().add(cell);
+                    lunghezza++;
+                    System.out.println("Ho espanso sulla riga");
+                    //break;
+                }
+                else if(!occupied[i][newCol]) {
+                    Cell cell = new Cell(i, newCol);
+                    occupied[i][newCol] = true;
+                    cell.setBlock(block);
+                    block.getCells().add(cell);
+                    lunghezza++;
+                    System.out.println("Ho espanso sulla colonna");
+                    //break;
                 }
             }
-        }
-        return true;
+            //non c'erano blocchi vicini disponibili: espando dove capita
+            for(int i=0; i<size; i++){
+                for(int j=0; j<size; j++){
+                    if(!occupied[i][j]) {
+                        Cell cell = new Cell(i, j);
+                        cell.setBlock(block);
+                        occupied[i][j] = true;
+                        block.getCells().add(cell);
+                        lunghezza++;
+                        System.out.println("Ho espanso per disperazione");
+                    }
+                }
+            }
+        }while (lunghezza < dim);
+        rimanenti=0;
     }
 
-    // Metodo di supporto per verificare se un blocco può essere espanso
-    private boolean canExpandBlock(List<Cell> cells, boolean[][] occupied, int size) {
-        for (Cell cell : cells) {
-            int row = cell.getRow();
-            int col = cell.getCol();
+}
 
-            if ((row > 0 && !occupied[row - 1][col]) || (row < size - 1 && !occupied[row + 1][col]) ||
-                    (col > 0 && !occupied[row][col - 1]) || (col < size - 1 && !occupied[row][col + 1])) {
-                return true;
-            }
-        }
-        return false;
-    }*/
+
+
 

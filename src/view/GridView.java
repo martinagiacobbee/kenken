@@ -6,6 +6,7 @@ import model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.List;
 import java.util.Random;
 
@@ -63,7 +64,15 @@ public class GridView extends JFrame {
         fileButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.createNewGameClicked();
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File("C:\\Users\\marti\\OneDrive\\Desktop\\Università\\Terzo Anno\\Ingegneria del Software\\progettoKENKEN\\progetto\\games"));
+                int returnValue = fileChooser.showOpenDialog(null); // Mostra il file chooser
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+
+                    controller.createNewGameFile(selectedFile);
+                }
             }
         });
         panel.add(fileButton);
@@ -90,8 +99,8 @@ public class GridView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     int num = Integer.parseInt(numberBlocks.getText());
-                    if (num > gridSize * gridSize || num < 1) {
-                        JOptionPane.showMessageDialog(p, "Inserisci un numero di vincoli compreso tra 1 e " + gridSize * gridSize, "Dialog",
+                    if (num >= gridSize*gridSize || num < 1) {
+                        JOptionPane.showMessageDialog(p, "Inserisci un numero di vincoli compreso tra 1 e " + (gridSize-1), "Dialog",
                                 JOptionPane.ERROR_MESSAGE);
                     } else {
                         numberBlocks.addKeyListener(new KeyAdapter() {
@@ -206,7 +215,120 @@ public class GridView extends JFrame {
         soluzione.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.solve();
+                resetGrid(); //elimino tutta la griglia: va risolto da zero
+                controller.resetGrid();
+                int [][] soluzione = controller.solve();
+                if(!(soluzione==null)) showSolution(soluzione);
+                else{
+                    JOptionPane.showMessageDialog(p, "Nessuna soluzione disponibile", "Dialog",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        JButton upload = new JButton("Save");
+        upload.setBounds(600, 360, 100, 50);
+        upload.addMouseListener(new MouseAdapter() {
+                                    @Override
+                                    public void mouseClicked(MouseEvent e) {
+                                        controller.uploadFile();
+                                        JOptionPane.showMessageDialog(p, "File salvato correttamente", "Dialog",
+                                                JOptionPane.INFORMATION_MESSAGE);
+                                    }
+                                });
+
+        add(upload);
+        add(check);
+        add(pulisci);
+        add(soluzione);
+        add(p);
+        revalidate();
+        repaint();
+        setVisible(true);
+    }
+
+    public void loadViewFromFile(Grid g){
+
+        getContentPane().removeAll(); // Rimuovi tutto il contenuto attuale dalla finestra
+        JLayeredPane p = new JLayeredPane();
+        p.setVisible(true);
+
+        constrainedGrid = new JTextField[gridSize][gridSize];
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                JTextField casella = new JTextField();
+                constrainedGrid[i][j] = casella;
+                int row= i;
+                int col = j;
+                casella.setFont(new Font(casella.getFont().getName(), Font.PLAIN, 20));
+                casella.setHorizontalAlignment(JTextField.CENTER);
+                casella.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            int num = Integer.parseInt(casella.getText());
+                            casella.setEditable(false);
+
+                            //imposto i valori sulla griglia della view e ne chiamo l'aggiunta su quella del model tramite controller
+                            grid[row][col] = Integer.parseInt(casella.getText());
+                            controller.setGridValue(row,col, grid[row][col]);
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(p, "Inserisci un numero valido.", "Dialog",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+                casella.setBounds(100 - (gridSize * 2) + j * 300 / gridSize, 160 - (gridSize * 2) + i * 300 / gridSize, 300 / gridSize, 300 / gridSize);
+                p.add(casella, JLayeredPane.DEFAULT_LAYER);
+            }
+        }
+        highlightBlocks(g.getBlocks(),p); //non c'è bisogno di far mediare il controller
+
+        JButton check = new JButton("check");
+        check.setBounds(600, 180, 100, 50);
+        Color checkColor = check.getBackground();
+        check.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if(controller.check()){
+                    check.setBackground(Color.GREEN);
+                    revalidate();
+                    repaint();
+
+                }else{
+                    check.setBackground(Color.RED);
+                    revalidate();
+                    repaint();
+                    controller.resetGrid(); //elimino tutto: ricomincia
+                }
+            }
+
+        });
+
+        JButton pulisci = new JButton("clear all");
+        pulisci.setBounds(600, 240, 100, 50);
+        pulisci.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                resetGrid();
+                check.setBackground(checkColor);
+                controller.resetGrid();
+            }
+        });
+
+        JButton soluzione = new JButton("solve");
+        soluzione.setBounds(600, 300, 100, 50);
+        soluzione.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                resetGrid(); //elimino tutta la griglia: va risolto da zero
+                controller.resetGrid();
+                int [][] soluzione = controller.solve();
+                if(!(soluzione==null)) showSolution(soluzione);
+                else{
+                    JOptionPane.showMessageDialog(p, "Nessuna soluzione disponibile", "Dialog",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -217,6 +339,32 @@ public class GridView extends JFrame {
         revalidate();
         repaint();
         setVisible(true);
+    }
+
+    public void showSolution(int[][] soluzione) {
+
+        JPanel p = new JPanel();
+        p.setLayout(new GridLayout(gridSize, gridSize));
+        JFrame frame = new JFrame("Soluzione");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(200, 200);
+        frame.setVisible(true);
+        JLabel[][] sol = new JLabel[gridSize][gridSize];
+        for(int i=0;i<gridSize;i++)
+        {
+            for (int j = 0; j < gridSize; j++)
+            {
+                sol[i][j] = new JLabel();
+                sol[i][j].setText(soluzione[i][j]+"");
+                sol[i][j].setFont(new Font(sol[i][j].getFont().getName(), Font.PLAIN, 20));
+                sol[i][j].setHorizontalAlignment(JTextField.CENTER);
+                p.add(sol[i][j]);
+            }
+        }
+
+        frame.add(p);
+        revalidate();
+        repaint();
     }
 
     public void highlightBlocks(List<Block> blocks, JLayeredPane p) {
@@ -231,7 +379,6 @@ public class GridView extends JFrame {
             p.add(vincolo, JLayeredPane.PALETTE_LAYER);
 
             for (Cell cell : block.getCells()) {
-                controller.addBlockForCell(cell, block);
                 JTextField cella = constrainedGrid[cell.getRow()][cell.getCol()];
                 cella.setBackground(blockColor);
             }
