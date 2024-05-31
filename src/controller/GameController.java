@@ -7,12 +7,11 @@ import view.GridView;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameController implements Serializable {
     private Grid grid; //modello
     private GridView gridView; //vista
+    private static int id=0;
 
     public GameController(Grid grid, GridView gridView) {
         this.grid = grid;
@@ -23,7 +22,10 @@ public class GameController implements Serializable {
 
     public void uploadFile(){
         try{
-            ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream(new File("uploadedFile")));
+            id++;
+            String path = "games/number_"+id;
+            FileOutputStream file = new FileOutputStream(path);
+            ObjectOutputStream oos=new ObjectOutputStream(file);
             oos.writeObject(grid);
             oos.close();
         }catch(IOException e){
@@ -37,21 +39,20 @@ public class GameController implements Serializable {
     }
     public void createNewGameFile(File f){
         //carica grid
-        Grid g = downloadFile(f);
+        downloadFile(f);
 
         //invia tutto alla vista
-        gridView.loadViewFromFile(g);
+        gridView.loadViewFromFile(grid);
     }
 
-    private Grid downloadFile(File nomeFile) {
+    private void downloadFile(File nomeFile) {
         try{
             ObjectInputStream ois= new ObjectInputStream(new FileInputStream(nomeFile));
             this.grid = (Grid) ois.readObject();
             ois.close();
         } catch (IOException | ClassNotFoundException e) {
-            return null;
+            return;
         }
-        return null;
     }
 
     public void generateBlock(JTextField operando, JTextField risultato) {

@@ -65,8 +65,14 @@ public class GridView extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
-                File f = fileChooser.getSelectedFile();
-                controller.createNewGameFile(f);
+                fileChooser.setCurrentDirectory(new File("C:\\Users\\marti\\OneDrive\\Desktop\\Università\\Terzo Anno\\Ingegneria del Software\\progettoKENKEN\\progetto\\games"));
+                int returnValue = fileChooser.showOpenDialog(null); // Mostra il file chooser
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+
+                    controller.createNewGameFile(selectedFile);
+                }
             }
         });
         panel.add(fileButton);
@@ -226,6 +232,8 @@ public class GridView extends JFrame {
                                     @Override
                                     public void mouseClicked(MouseEvent e) {
                                         controller.uploadFile();
+                                        JOptionPane.showMessageDialog(p, "File salvato correttamente", "Dialog",
+                                                JOptionPane.INFORMATION_MESSAGE);
                                     }
                                 });
 
@@ -486,7 +494,7 @@ public class GridView extends JFrame {
 
     public static void main(String[] args) {
 
-        Grid grid = new Grid(2);
+        Grid grid = new Grid(3);
         GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }
