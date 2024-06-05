@@ -14,6 +14,7 @@ public abstract class Block implements Serializable {
     public abstract void addCell(Cell cell);
     public abstract void removeCell(Cell cell);
     public abstract void removeAll();
+    public abstract String getOperator();
 
     public boolean equals(Block b) {
         if(!( b instanceof Block)) return false;
@@ -30,16 +31,16 @@ public abstract class Block implements Serializable {
         switch (operator) {
             case "+":
                 constraint = result+"+";
-                return new SumBlock(result, constraint);
+                return new SumBlock(result, constraint, operator);
             case "-":
                 constraint = result+"-";
-                return new SubBlock(result, constraint);
+                return new SubBlock(result, constraint, operator);
             case "*":
                 constraint = result+"*";
-                return new MulBlock(result, constraint);
+                return new MulBlock(result, constraint, operator);
             case "/":
                 constraint = result+"/";
-                return new DivBlock(result, constraint);
+                return new DivBlock(result, constraint, operator);
             default:
                 throw new IllegalArgumentException("Operatore non valido");
         }

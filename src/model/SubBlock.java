@@ -1,14 +1,17 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubBlock extends Block {
+public class SubBlock extends Block implements Serializable {
     private int result;
     private List<Cell> cells;
-    private String constraint;
+    private String constraint, op;
 
-    public SubBlock(int result, String constraint) {
+    public SubBlock(int result, String constraint, String op) {
+
+        this.op=op;
         this.result = result;
         this.cells = new ArrayList<>();
         this.constraint = constraint;
@@ -16,6 +19,10 @@ public class SubBlock extends Block {
 
     public String toString(){
         return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
+    }
+
+    public String getOperator(){
+        return this.op;
     }
 
     @Override

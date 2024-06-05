@@ -1,14 +1,18 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DivBlock extends Block {
+public class DivBlock extends Block implements Serializable {
     private int result;
     private List<Cell> cells;
     private String constraint;
+    private String op;
 
-    public DivBlock(int result, String constraint) {
+    public DivBlock(int result, String constraint, String op) {
+
+        this.op = op;
         this.result = result;
         this.constraint = constraint;
         this.cells = new ArrayList<>();
@@ -16,6 +20,10 @@ public class DivBlock extends Block {
 
     public String toString(){
         return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
+    }
+
+    public String getOperator(){
+        return this.op;
     }
 
     public void addCell(Cell cell) {
