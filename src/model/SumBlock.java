@@ -1,14 +1,16 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SumBlock extends Block {
+public class SumBlock extends Block implements Serializable {
     private int result;
     private List<Cell> cells;
-    private String constraint;
+    private String constraint, op;
 
-    public SumBlock(int result, String constraint) {
+    public SumBlock(int result, String constraint, String op) {
+        this.op=op;
         this.result = result;
         this.cells = new ArrayList<>();
         this.constraint = constraint;
@@ -29,6 +31,7 @@ public class SumBlock extends Block {
     public void removeAll(){
         cells.clear();
     }
+
 
     @Override
     public void setResult(int result) {
@@ -66,6 +69,10 @@ public class SumBlock extends Block {
     @Override
     public String getConstraint(){
         return this.constraint;
+    }
+
+    public String getOperator(){
+        return this.op;
     }
     @Override
     public int getResult() {

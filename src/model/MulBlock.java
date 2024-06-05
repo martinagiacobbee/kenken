@@ -1,14 +1,16 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MulBlock extends Block {
+public class MulBlock extends Block implements Serializable {
     private int result;
     private List<Cell> cells;
-    private String constraint;
+    private String constraint, op;
 
-    public MulBlock(int result, String constraint) {
+    public MulBlock(int result, String constraint, String op) {
+        this.op = op;
         this.result = result;
         this.cells = new ArrayList<>();
         this.constraint = constraint;
@@ -20,6 +22,10 @@ public class MulBlock extends Block {
 
     public void addCell(Cell cell) {
         this.cells.add(cell);
+    }
+
+    public String getOperator(){
+        return this.op;
     }
 
     public void removeCell(Cell cell){
