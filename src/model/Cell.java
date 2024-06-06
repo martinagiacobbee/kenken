@@ -31,4 +31,10 @@ public class Cell implements Serializable {
     public String toString() {
         return "(" + colonna + "," + riga + ")";
     }
+
+    public boolean equals(Object obj) {
+        if(! (obj instanceof Cell)){ return false; }
+        Cell c = (Cell)obj;
+        return c.riga == this.riga && c.colonna == this.colonna && c.block == this.block;
+    }
 }

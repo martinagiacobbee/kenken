@@ -4,9 +4,13 @@ import controller.GameController;
 import model.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -19,11 +23,13 @@ public class GridView extends JFrame {
     private int[][] grid;
     private int constraints; //numero di blocchi scelto dall'utente
     private Random rand = new Random();
+    private int maxSol;
 
 
     public GridView(int[][] grid) {
         this.gridSize = grid.length;
         this.grid = grid;
+        this.maxSol=1;
         setTitle("KenKen Solver");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -128,18 +134,6 @@ public class GridView extends JFrame {
         setVisible(true);
     }
 
-    //notify when a new block is added
-    public void update(Grid grid) {
-        //aggiorna la griglia
-        /*for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                cells[i][j].setText(grid.getGrid()[i][j] == 0 ? "" : String.valueOf(grid.getGrid()[i][j]));
-            }
-        }*/
-        //highlightBlocks(grid.getBlocks());
-    }
-
-
     public void loadGamePage() {
         //Finestra di gioco
 
@@ -217,8 +211,10 @@ public class GridView extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 resetGrid(); //elimino tutta la griglia: va risolto da zero
                 controller.resetGrid();
-                int [][] soluzione = controller.solve();
-                if(!(soluzione==null)) showSolution(soluzione);
+
+               LinkedList<Grid> soluzioni = controller.solve(maxSol);
+                //LinkedList<int [][]> soluzioni = controller.solve();
+                if(!(soluzioni.isEmpty())) showSolution(soluzioni);
                 else{
                     JOptionPane.showMessageDialog(p, "Nessuna soluzione disponibile", "Dialog",
                             JOptionPane.ERROR_MESSAGE);
@@ -226,7 +222,7 @@ public class GridView extends JFrame {
             }
         });
 
-        JButton upload = new JButton("Save");
+        JButton upload = new JButton("save");
         upload.setBounds(600, 360, 100, 50);
         upload.addMouseListener(new MouseAdapter() {
                                     @Override
@@ -236,7 +232,23 @@ public class GridView extends JFrame {
                                                 JOptionPane.INFORMATION_MESSAGE);
                                     }
                                 });
+        JSpinner spinner = new JSpinner();
+        spinner.setBounds(600, 420, 100, 50);
+        spinner.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        JButton getValue = new JButton("Set number of solutions");
+        getValue.setBounds(550, 470, 200, 50);
 
+        getValue.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int spinnerValue = (Integer) spinner.getValue();
+                maxSol = spinnerValue;
+
+            }
+        });
+
+        add(spinner);
+        add(getValue);
         add(upload);
         add(check);
         add(pulisci);
@@ -245,6 +257,7 @@ public class GridView extends JFrame {
         revalidate();
         repaint();
         setVisible(true);
+
     }
 
     public void loadViewFromFile(Grid g){
@@ -321,17 +334,35 @@ public class GridView extends JFrame {
         soluzione.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                resetGrid(); //elimino tutta la griglia: va risolto da zero
-                controller.resetGrid();
-                int [][] soluzione = controller.solve();
-                if(!(soluzione==null)) showSolution(soluzione);
-                else{
+               resetGrid(); //elimino tutta la griglia: va risolto da zero
+               controller.resetGrid();
+
+                LinkedList<Grid> soluzioni = controller.solve(maxSol);
+
+               if(!(soluzioni.isEmpty())) showSolution(soluzioni);
+               else{
                     JOptionPane.showMessageDialog(p, "Nessuna soluzione disponibile", "Dialog",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
+        JSpinner spinner = new JSpinner();
+        spinner.setBounds(600, 360, 100, 50);
+        spinner.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        JButton getValue = new JButton("Set number of solutions");
+        getValue.setBounds(550, 470, 200, 50);
+
+        getValue.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int spinnerValue = (Integer) spinner.getValue();
+                maxSol = spinnerValue;
+            }
+        });
+
+        add(spinner);
+        add(getValue);
         add(check);
         add(pulisci);
         add(soluzione);
@@ -341,28 +372,8 @@ public class GridView extends JFrame {
         setVisible(true);
     }
 
-    public void showSolution(int[][] soluzione) {
-
-        JPanel p = new JPanel();
-        p.setLayout(new GridLayout(gridSize, gridSize));
-        JFrame frame = new JFrame("Soluzione");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(200, 200);
-        frame.setVisible(true);
-        JLabel[][] sol = new JLabel[gridSize][gridSize];
-        for(int i=0;i<gridSize;i++)
-        {
-            for (int j = 0; j < gridSize; j++)
-            {
-                sol[i][j] = new JLabel();
-                sol[i][j].setText(soluzione[i][j]+"");
-                sol[i][j].setFont(new Font(sol[i][j].getFont().getName(), Font.PLAIN, 20));
-                sol[i][j].setHorizontalAlignment(JTextField.CENTER);
-                p.add(sol[i][j]);
-            }
-        }
-
-        frame.add(p);
+    public void showSolution(LinkedList<Grid> soluzioni) {
+        GridPanelNavigator gpn = new GridPanelNavigator(soluzioni);
         revalidate();
         repaint();
     }
@@ -494,7 +505,7 @@ public class GridView extends JFrame {
 
     public static void main(String[] args) {
 
-        Grid grid = new Grid(3);
+        Grid grid = new Grid(6);
         GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }
