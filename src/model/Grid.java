@@ -1,5 +1,6 @@
 package model;
 
+//import backtracking.Backtracking;
 import backtracking.Backtracking;
 import controller.GameController;
 import view.GridView;
@@ -16,8 +17,8 @@ public class Grid implements Serializable {
     private int size;
     private int[][] grid;
     private List<Block> blocks;
-    private static List<GridView> viewObservers;
     private Backtracking resolver;
+
     private int rimanenti;
 
 
@@ -26,6 +27,7 @@ public class Grid implements Serializable {
         this.grid = new int[size][size];
         this.rimanenti= size*size;
         this.blocks = new LinkedList<Block>();
+
         //this.viewObservers = new LinkedList<>();
     }
 
@@ -62,7 +64,7 @@ public class Grid implements Serializable {
     public void clear() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                this.grid[i][j] = -1;
+                this.grid[i][j] = 0;
             }
         }
     }
@@ -75,15 +77,13 @@ public class Grid implements Serializable {
         this.blocks.add(block);
     }
 
-    public void notifyObservers() {
-        for (GridView view : viewObservers) {
-            view.update(this);
+   public void setGrid(int[][] g){
+        for(int i = 0; i < size; i++){
+            for(int j = 0; j < size; j++){
+                this.grid[i][j] = g[i][j];
+            }
         }
-    }
-
-    public void addObserver(GridView view) {
-        viewObservers.add(view);
-    }
+   }
 
     public int getSize() {
         return size;
@@ -101,22 +101,29 @@ public class Grid implements Serializable {
         this.blocks = blocks;
     }
 
-    public int[][] risolvi() {
+
+
+    public LinkedList<Grid> risolvi(int max) {
         resolver = new Backtracking(this);
-        resolver.risolvi();
-        return resolver.getSoluzione();
+        resolver.risolvi(max);
+        return resolver.getSolList();
+
     }
+
 
     public void createRandomBlocks() {
         boolean[][] occupied = new boolean[size][size];
-        initGrid(); //REMOVE
+        initGrid();
         int blocchiRimanenti=blocks.size()+1;
         rimanenti = size*size;
-
-
         for (Block block : blocks) {
             blocchiRimanenti--;
-            int blockSize = rand.nextInt(4) + 1; // Dimensione del blocco tra 1 e 5
+            int blockSize;
+            if(block.getOperator().equals("-")|| block.getOperator().equals("/")){
+                blockSize=2; //dimensione di due celle, sempre
+            }
+            else blockSize = rand.nextInt(4) + 1; // Dimensione del blocco tra 1 e 5
+
             System.out.println("Blocksize: "+blockSize);
             int limite = (rimanenti/blocchiRimanenti)+1;
             System.out.println("Limite: "+limite);
@@ -186,8 +193,10 @@ public class Grid implements Serializable {
         System.out.println("Ho terminato l'inizializzazione.");
 
         for (Block b : blocks) {
-            if(rimanenti != 0)
+            if(rimanenti != 0 && !b.getOperator().equals("-") && !b.getOperator().equals("/")) {
+                //non posso espandere SubBlock nè DivBlock
                 expandBlock(b, occupied, b.getCells()); //tenta di espandere un blocco per volta
+            }
         }
 
     }

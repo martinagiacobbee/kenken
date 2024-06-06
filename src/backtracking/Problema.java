@@ -1,68 +1,78 @@
 package backtracking;
 
-import model.Cell;
+public interface Problema<P, S> {
 
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
+    P primoPuntoDiScelta();
 
-public abstract class Problema<P,S> {
+    P prossimoPuntoDiScelta(P ps);
 
-    protected abstract boolean assegnabile(P p, S s);
+    P ultimoPuntoDiScelta();
 
-    protected abstract void assegna(P ps, S s);
+    S primaScelta(P ps);
 
-    protected abstract void deassegna(P ps);
+    S prossimaScelta(S s);
 
-    protected abstract void scriviSoluzione();
+    S ultimaScelta(P ps);
 
-    /*private P prossimoPuntoDiScelta(List<P> ps, P p) {
-        if (esisteSoluzione(p)) throw new NoSuchElementException();
-        int i = ps.indexOf(p);
-        System.out.println("index of "+p+": "+i);
-        if(i+1 >= ps.size()) System.out.println("Nessuna scelta possibile per "+p);
-        System.out.println("Prossimo punto di scelta: "+ps.get(i+1));
-        return ps.get(i + 1);
-    }//prossimoPuntoDiScelta*/
+    boolean assegnabile(S scelta, P puntoDiScelta);
 
-    protected abstract P prossimoPuntoDiScelta(List<P> ps, P p);
+    void assegna(S scelta, P puntoDiScelta);
 
-    protected abstract boolean esisteSoluzione(P p);
+    void deassegna(S scelta, P puntoDiScelta);
 
-    protected abstract boolean ultimaSoluzione(P p);
+    boolean ultimoPuntoDiScelta(P puntoDiScelta); //ADDED
 
-    //factory
-    protected abstract List<P> puntiDiScelta();
+    P precedentePuntoDiScelta(P puntoDiScelta);
 
-    protected abstract Collection<S> scelte(P p);
+    S ultimaSceltaAssegnataA(P puntoDiScelta);
 
-    protected final boolean tentativo(List<P> ps, P p) {
-        Collection<S> sa = scelte(p);
-        for (S s : sa) {
-            System.out.println("Prima scelta: "+s+" per ps: "+p);
-            if (ultimaSoluzione(p)){
-                System.out.println("ultima soluzione");
-                break;
+    void scriviSoluzione(int nr_sol);
+
+    default  void risolvi(){
+        risolvi(Integer.MAX_VALUE);
+    }
+
+    default void risolvi(int num_max_soluzioni) { // template method
+        int nr_soluzione = 0;
+        P ps = primoPuntoDiScelta();
+        S s = primaScelta(ps);
+        boolean backtrack = false, fine = false;
+        do {
+            // forward
+            while (!backtrack && nr_soluzione < num_max_soluzioni) {
+                if (assegnabile(s, ps)) {
+                    assegna(s, ps);
+                    if (ultimoPuntoDiScelta(ps)) {
+                        ++nr_soluzione;
+                        scriviSoluzione(nr_soluzione);
+                        deassegna(s, ps);
+                        if (!s.equals(ultimaScelta(ps)))
+                            s = prossimaScelta(s);
+                        else
+                            backtrack = true;
+                    } else {
+                        ps = prossimoPuntoDiScelta(ps);
+                        s = primaScelta(ps);
+                    }
+                } else if (!s.equals(ultimaScelta(ps)))
+                    s = prossimaScelta(s);
+                else
+                    backtrack = true;
+            }// while( !backtrack ... )
+            // backward
+            fine = ps.equals(primoPuntoDiScelta())
+                    || nr_soluzione == num_max_soluzioni;
+            while (backtrack && !fine) {
+                ps = precedentePuntoDiScelta(ps);
+                s = ultimaSceltaAssegnataA(ps);
+                deassegna(s, ps);
+                if (!s.equals(ultimaScelta(ps))) {
+                    s = prossimaScelta(s);
+                    backtrack = false;
+                } else if (ps.equals(primoPuntoDiScelta()))
+                    fine = true;
             }
-            if (assegnabile(p, s)) {
-                //assegna(p,s);
-                //System.out.println("assegnabile");
-                if (esisteSoluzione(p)) {
-                    System.out.println("esiste soluzione");
-                    scriviSoluzione();
-                    return true;
-                } else {
-                    if (tentativo(ps, prossimoPuntoDiScelta(ps, p)))
-                        return true;
-                }
-                tentativo(ps, prossimoPuntoDiScelta(ps, p));
-            }tentativo(ps, prossimoPuntoDiScelta(ps, p));
+        } while (!fine);
+    }// risolvi
 
-
-        }
-        return false;
-    } // tentativo
-
-    protected abstract void risolvi();
 }
-

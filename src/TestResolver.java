@@ -1,3 +1,4 @@
+import backtracking.Backtracking;
 import model.Block;
 import model.Cell;
 import model.Grid;
@@ -20,6 +21,9 @@ public class TestResolver {
         grid.addBlock(block2);
         grid.createRandomBlocks();
         assertFalse(grid.getBlocks().isEmpty()); //li crea correttamente
+
+        assertTrue(block2.getCells().size()==2); //SubBlock di dimensione sempre 2
+
     }
 
     @Test
@@ -80,6 +84,22 @@ public class TestResolver {
         block_div.setCells(cell_div);
         assertFalse(block_div.isSatisfied(grid)); //false perchè l'1 è già presente nella colonna 0 (in 1,0)
 
+    }
+
+
+    @Test
+    public void testResolver(){
+        Grid g = new Grid(2);
+        Block block = Block.createBlock("+", 3);
+        Block block2 = Block.createBlock("-", 1);
+
+        g.addBlock(block);
+        g.addBlock(block2);
+        g.createRandomBlocks();
+
+        Backtracking back = new Backtracking(g);
+        back.risolvi(3);
+        assertTrue(!back.getSolList().isEmpty()); //esiste sicuramente almeno una soluzione a questa configurazione
     }
 
 }
