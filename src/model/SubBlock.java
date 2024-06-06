@@ -17,29 +17,14 @@ public class SubBlock extends Block implements Serializable {
         this.constraint = constraint;
     }
 
+    @Override
     public String toString(){
         return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
     }
 
+    @Override
     public String getOperator(){
         return this.op;
-    }
-
-    @Override
-    public void setResult(int result) {
-        this.result = result;
-    }
-
-    public void addCell(Cell cell) {
-        this.cells.add(cell);
-    }
-
-    public void removeCell(Cell cell){
-        this.cells.remove(cell);
-    }
-
-    public void removeAll(){
-        this.cells.clear();
     }
 
     public boolean isSatisfied(int[][] grid) {
@@ -53,17 +38,6 @@ public class SubBlock extends Block implements Serializable {
 
         if(x-y == result || y-x == result) return true;
         return false;
-
-
-        /*
-        Cell first = cells.getFirst();
-        int sub = grid[first.getRow()][first.getCol()];
-        for(int i=1; i<cells.size(); i++){
-            int value = grid[cells.get(i).getRow()][cells.get(i).getCol()];
-            sub-=value;
-            if(!checkGrid(cells.get(i), grid)) return false;
-        }
-        return Math.abs(sub) == result;*/
     }
 
     private boolean checkGrid(Cell cell, int[][] grid) {

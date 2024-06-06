@@ -1,10 +1,6 @@
 package model;
 
-//import backtracking.Backtracking;
 import backtracking.Backtracking;
-import controller.GameController;
-import view.GridView;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -27,8 +23,6 @@ public class Grid implements Serializable {
         this.grid = new int[size][size];
         this.rimanenti= size*size;
         this.blocks = new LinkedList<Block>();
-
-        //this.viewObservers = new LinkedList<>();
     }
 
     public String toString() {
@@ -50,7 +44,6 @@ public class Grid implements Serializable {
     }
 
     public Cell getCell(int row, int col) {
-        //funziona solo se tutta la griglia è occupata dai blocchi!
         for (Block b : blocks) {
             for (Cell c : b.getCells()) {
                 if (c.getRow() == row && c.getCol() == col) {
@@ -97,19 +90,12 @@ public class Grid implements Serializable {
         return blocks;
     }
 
-    private void setBlocks(List<Block> blocks) {
-        this.blocks = blocks;
-    }
-
-
-
     public LinkedList<Grid> risolvi(int max) {
         resolver = new Backtracking(this);
         resolver.risolvi(max);
         return resolver.getSolList();
 
     }
-
 
     public void createRandomBlocks() {
         boolean[][] occupied = new boolean[size][size];
@@ -138,7 +124,6 @@ public class Grid implements Serializable {
             do {
                 row = rand.nextInt(size);
                 col = rand.nextInt(size);
-               // System.out.println("cella [" + row + ", " + col + "], occupata: "+occupied[row][col]);
             } while (occupied[row][col]);
 
             // Aggiunge la cella di partenza al blocco

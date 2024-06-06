@@ -7,13 +7,9 @@ import java.util.List;
 public abstract class Block implements Serializable {
     public abstract boolean isSatisfied(int[][] grid);
     public abstract int getResult();
-    public abstract void setResult(int result);
     public abstract List<Cell> getCells();
     public abstract void setCells(List<Cell> cells);
     public abstract String getConstraint();
-    public abstract void addCell(Cell cell);
-    public abstract void removeCell(Cell cell);
-    public abstract void removeAll();
     public abstract String getOperator();
 
     public boolean equals(Block b) {
