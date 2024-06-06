@@ -4,6 +4,8 @@ import controller.GameController;
 import model.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -232,6 +234,7 @@ public class GridView extends JFrame {
         spinner.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         JButton getValue = new JButton("Set number of solutions");
         getValue.setBounds(550, 470, 200, 50);
+
 
         getValue.addActionListener(new ActionListener() {
             @Override
@@ -501,6 +504,7 @@ public class GridView extends JFrame {
     public static void main(String[] args) {
 
         Grid grid = new Grid(4);
+
         GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }
