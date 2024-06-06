@@ -1,220 +1,283 @@
 package backtracking;
 
+
 import model.Block;
 import model.Cell;
 import model.Grid;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class Backtracking extends Problema<Cell, Integer> {
-    private int[][] grid;
-    private Grid game;
-    private List<Block> blocks;
+public class Backtracking implements Problema<Cell, Integer> {
+    private Grid grid;
+    private int i = 0, scelta = 0;
     private int size;
-    private int numSoluzioni=1;
     private int[][] soluzione;
-    private int numMaxSoluzioni;
+    private ArrayList<Cell> cells;
+    private HashMap<Block, LinkedList<Cell>> blocchi;
+    private boolean[][] initialized;
+    private LinkedList<Grid> solList;
 
-    private List<Cell> prossimeScelte;
 
-
-
-    public Backtracking(Grid g) {
-        this.prossimeScelte= new ArrayList<>();
-        this.size = g.getSize();
-        this.game = g;
-        grid = g.getGrid();
-        blocks = new LinkedList<>();
-        blocks.addAll(g.getBlocks());
-
+    public Backtracking(Grid grid) {
+        this.grid = grid;
+        this.size = grid.getSize();
         this.soluzione = new int[size][size];
-        for(int i=0; i<size; i++) {
-            for(int j=0; j<size; j++) {
-                soluzione[i][j]=0;
+        this.initialized = new boolean[size][size];
+
+        this.solList = new LinkedList<>();
+
+        this.cells = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                cells.add(grid.getCell(i, j)); //le inserisco in ordine
+                initialized[i][j]=false;
+                soluzione[i][j] = 0;
             }
+        }
+
+    }
+
+    public LinkedList<Grid> getSolList() {
+        return solList;
+    }
+
+    @Override
+    public Cell primoPuntoDiScelta() {
+        i = 0;
+        return cells.get(i);
+    }
+
+    @Override
+    public Cell prossimoPuntoDiScelta(Cell ps) {
+        Block init = ps.getBlock();
+        List<Cell> celle = init.getCells();
+        if(init.isSatisfied(soluzione)){
+            //passa al prossimo blocco
+            for(Block b : grid.getBlocks()) {
+                if(!b.equals(init)){
+                    for(int k = 0; k < b.getCells().size(); k++) {
+                        if(!initialized[b.getCells().get(k).getRow()][b.getCells().get(k).getCol()]){
+                            return b.getCells().get(k);
+                        }
+                    }
+                }
+            }
+        }
+        for(int k = 0; k < celle.size(); k++) {
+            if(!initialized[celle.get(k).getRow()][celle.get(k).getCol()]){
+                return celle.get(k);
+            }
+        }
+        return ps; //se è l'unico elemento nel blocco ed il blocco non è soddisfatto, bisogna cambiare ps stesso
+    }
+
+    @Override
+    public boolean ultimoPuntoDiScelta(Cell ps) {
+            if(nonInizializzati()>0) return false;
+            return true;
+        /*for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if (!initialized[i][j]) {
+                    int row = i;
+                    int col = j;
+                    for (Cell c : cells) {
+                        if (c.getRow() == row && c.getCol() == col) {
+                            return c.equals(ps);
+                        }
+                    }
+                }
+            }
+        }
+        return false;*/
+    }
+
+    private int nonInizializzati(){
+        int init=0;
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
+                if(!initialized[i][j]){
+                    ++init;
+                }
+            }
+        }
+        return init;
+    }
+
+    @Override
+    public Cell ultimoPuntoDiScelta() {
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if(!initialized[i][j]){
+                    int row = i;
+                    int col = j;
+                    for(Cell c : cells){
+                        if(c.getRow() == row && c.getCol() == col){
+                            return c;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Integer primaScelta(Cell ps) {
+        return 1;
+    }
+
+    @Override
+    public Integer prossimaScelta(Integer integer) {
+        scelta = integer + 1;
+        return scelta;
+
+    }
+
+    @Override
+    public Integer ultimaScelta(Cell ps) {
+        return size;
+    }
+
+    private void setAllCellsInValue(Block b, int value){
+        for (Cell c : b.getCells()) {
+            soluzione[c.getRow()][c.getCol()] = value;
         }
     }
 
     @Override
-    protected Cell prossimoPuntoDiScelta(List<Cell> ps, Cell p){
-        Cell res = new Cell(0,0);
-        if(!prossimeScelte.isEmpty()){
-            res = prossimeScelte.getFirst();
-            prossimeScelte.remove(res);
-        }
-        return res;
-    }
+    public boolean assegnabile(Integer scelta, Cell puntoDiScelta) {
+        int row = puntoDiScelta.getRow();
+        int col = puntoDiScelta.getCol();
 
-
-    @Override
-    protected boolean assegnabile(Cell cell, Integer s) {
-        /*
-        System.out.println("Assegnabile: "+ (grid[cell.getRow()][cell.getCol()] == -1 && isValidValue(cell, s)));
-        // Assegna il valore alla cella per il controllo
-
-        for(int i=0; i<size; i++) {
-            for(int j=0; j<size; j++) {
-                if(grid[cell.getRow()][cell.getCol()] == -1) {
-                    return grid[cell.getRow()][cell.getCol()] == -1 && isValidValue(cell, s);
-                }
-            }
-        }
-        System.out.println("Tutte le celle sono state occupate.");
-        for(Block block : blocks) {
-             //tutte le celle nel blocco sono state assegnate
-            if (!block.isSatisfied(grid)) {
-                System.out.println("Blocco " + block.toString() + " non soddisfatto ");
-                for(Cell c2 : block.getCells()) {
-                    deassegna(c2);
-                }
+        // Controllo sulla riga
+        for (int i = 0; i < size; i++) {
+            if (soluzione[row][i] == scelta) {
                 return false;
             }
         }
 
-        return true;
-       // return grid[cell.getRow()][cell.getCol()] == -1 && isValidValue(cell, s);*/
-
-        if(isValidValue(cell, s)){
-            assegna(cell,s);
-            Block block = cell.getBlock();
-            if(block.isSatisfied(grid)) return true;
-            else{
-                deassegna(cell);
+        // Controllo sulla colonna
+        for (int i = 0; i < size; i++) {
+            if (soluzione[i][col] == scelta) {
                 return false;
             }
+        }
+        Block b = puntoDiScelta.getBlock();
+        if(b.getCells().size()==1){
+            if(scelta == b.getResult())
+                return true;
+        }
+        if(b.getOperator().equals("+")){
+            int sum=0;
+            for (Cell x: b.getCells()) {
+                //if (soluzione[x.getRow()][x.getCol()] != 0)
+                sum += soluzione[x.getRow()][x.getCol()];
+
+            }
+            return sum+scelta<=b.getResult(); //ADDED
+
+        }else if(b.getOperator().equals("-")){
+            for(int j=0; j<b.getCells().size()-1; j++) {
+                if(soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()]==0 && soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()]==0) return true;
+                else if(soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()]==0) return Math.abs(soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()]-scelta)==b.getResult();
+                else if( soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()]==0) return Math.abs(soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()]-scelta)==b.getResult();
+            }
+            return false;
+
+        }else if(b.getOperator().equals("*")){
+            int mul=1;
+            for (Cell x: b.getCells()) {
+
+                if(soluzione[x.getRow()][x.getCol()]!=0)
+                    mul *= soluzione[x.getRow()][x.getCol()];
+            }
+            return mul*scelta<=b.getResult();
+
+        }else if(b.getOperator().equals("/")){
+            for(int j=0; j<b.getCells().size()-1; j++) {
+                if(soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()]==0 && soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()]==0) return true;
+                else if(soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()]==0) return ( (soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()]/scelta)==b.getResult() || (scelta/soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()])==b.getResult());
+                else if( soluzione[b.getCells().get(j+1).getRow()][b.getCells().get(j+1).getCol()]==0) return ((soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()]/scelta)==b.getResult() || (scelta/soluzione[b.getCells().get(j).getRow()][b.getCells().get(j).getCol()])==b.getResult());
+            }
+            return false;
+
         }
 
         return false;
     }
 
-    @Override
-    protected void assegna(Cell ps, Integer s) {
-        System.out.println("Ho assegnato "+s+" alla cella ("+ps.getRow()+","+ps.getCol()+").");
-        game.setGridValue(ps.getRow(), ps.getCol(), s);
-        grid[ps.getRow()][ps.getCol()] = s;
-        prossimeScelte.remove(ps);
-    }
 
     @Override
-    protected void deassegna(Cell ps) {
-        System.out.println("Ho deassegnato la cella ("+ps.getRow()+","+ps.getCol()+").");
-        game.setGridValue(ps.getRow(), ps.getCol(), -1);
-        grid[ps.getRow()][ps.getCol()] = -1;
-        prossimeScelte.add(ps);
+    public void assegna(Integer scelta, Cell puntoDiScelta) {
+        soluzione[puntoDiScelta.getRow()][puntoDiScelta.getCol()] = scelta;
+        initialized[puntoDiScelta.getRow()][puntoDiScelta.getCol()]=true;
+
     }
 
     @Override
-    protected void scriviSoluzione() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                soluzione[i][j] = grid[i][j];
-                System.out.print(grid[i][j] + " ,");
-            }
-            System.out.println();
-        }
-    }
-
-    public int[][] getSoluzione(){
-        return soluzione;
+    public void deassegna(Integer scelta, Cell puntoDiScelta) {
+        soluzione[puntoDiScelta.getRow()][puntoDiScelta.getCol()]=0;
+        initialized[puntoDiScelta.getRow()][puntoDiScelta.getCol()]=false;
     }
 
     @Override
-    protected boolean esisteSoluzione(Cell cell) {
-        for( int i=0; i<size; i++ )
-            for(int j=0; j<size; j++)
-                if(grid[i][j]==-1)
-                    return false;
-        //numSoluzioni--;
-        return true;
-    }
-
-    @Override
-    protected boolean ultimaSoluzione(Cell cell) {
-        //return numSoluzione<numMaxSoluzioni;
-        return numSoluzioni<0;
-    }
-
-    @Override
-    protected List<Cell> puntiDiScelta() {
-        List<Cell> l= new ArrayList<>();
-        /*for ( int i= 0; i<size ;i++)
-            for(int j=0;j<size;j++)
-                l.add(new Cell(i,j));*/
-        for(Block b: blocks){
-            l.addAll(b.getCells());
-            prossimeScelte.addAll(b.getCells());
-        }
-        return l;
-    }
-
-    @Override
-    protected Collection<Integer> scelte(Cell cell) {
-        Collection<Integer> cells=new ArrayList<>();
-        for (int i =-1; i<size;i++)
-            cells.add(i+1);
-        return cells;
-    }
-
-
-    @Override
-    public void risolvi() {
-        System.out.println("avvio risoluzione");
-        /*Cell c = game.getCell(0,0); //funziona solo se tutta la griglia è occupata dai blocchi
-        if (c == null){
-            c = new Cell(0, 0); //da togliere quando funziona
-        }*/
-        Cell c = blocks.getFirst().getCells().getFirst();
-        prossimeScelte.remove(c);
-        tentativo(puntiDiScelta(), c);
-    }
-
-    private boolean isValidValue(Cell cell, int value) {
-        // Verifica se il valore è già presente nella stessa riga o colonna
-        for (int i = 0; i < grid.length; i++) {
-            // Controllo sulla riga
-            if (i != cell.getCol() && grid[cell.getRow()][i] == value ) {
-                System.out.println("Uguale alla colonna");
-                return false;
-            }
-            // Controllo sulla colonna
-            if (i != cell.getRow() && grid[i][cell.getCol()] == value) {
-                System.out.println("Uguale alla riga");
-                return false;
-            }
-        }
-        return true;
-
-        // Controlla se tutti i blocchi sono soddisfatti con questa assegnazione
-
-        /*for(Block block : blocks) {
-            for (Cell c : block.getCells()) {
-                if(grid[c.getRow()][c.getCol()] == -1){
-                    return false; //prova ad andare avanti
-
-                }else{ //tutte le celle nel blocco sono state assegnate
-                    if (!block.isSatisfied(grid)) {
-                        System.out.println("Blocco " + block.toString() + " non soddisfatto ");
-                        for(Cell c2 : block.getCells()) {
-                            deassegna(c2);
+    public Cell precedentePuntoDiScelta(Cell puntoDiScelta) {
+        List<Cell> celle = puntoDiScelta.getBlock().getCells();
+        if(celle.isEmpty() || celle.size()==1){
+            for(Block b : grid.getBlocks()) {
+                if(!b.equals(puntoDiScelta.getBlock())){
+                    for(int k = 0; k < celle.size(); k++) {
+                        if(initialized[celle.get(k).getRow()][celle.get(k).getCol()]){
+                            initialized[celle.get(k).getRow()][celle.get(k).getCol()]=false;
+                            return celle.get(k);
                         }
-                        return false;
                     }
                 }
             }
         }
 
-        return true;*/
+        for(int k = 0; k < celle.size(); k++) {
+            Cell curr = celle.get(k);
+            if(initialized[curr.getRow()][curr.getCol()] && ! curr.equals(puntoDiScelta)){
+                initialized[curr.getRow()][curr.getCol()]=false;
+                return curr;
+            }
+        }
+
+        //if(index == celle.size()) return prossimoPuntoDiScelta(puntoDiScelta);
+        return puntoDiScelta;
+    }
+
+    @Override
+    public Integer ultimaSceltaAssegnataA(Cell puntoDiScelta) {
+        return soluzione[puntoDiScelta.getRow()][puntoDiScelta.getCol()];
+    }
+
+    @Override
+    public void scriviSoluzione(int nr_sol) {
+        System.out.println("");
+        System.out.println("-----INIZIO SOLUZIONE----");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                System.out.print("["+i+"]["+j+"]: "+ soluzione[i][j]);
+                System.out.print(" ,");
+            }
+            System.out.println();
+        }
+        Grid griglia = new Grid(size);
+        griglia.setGrid(soluzione);
+        solList.add(griglia);
+        System.out.println("-----END SOLUZIONE----");
     }
 
     public static void main(String[] args) {
         Grid g = new Grid(3);
-        Block block = Block.createBlock("+", 2);
-        Block block2 = Block.createBlock("-", 3);
+        Block block = Block.createBlock("+", 3);
+        Block block2 = Block.createBlock("/", 2);
+        Block block3 = Block.createBlock("+", 4);
         g.addBlock(block);
         g.addBlock(block2);
+        g.addBlock(block3);
         g.createRandomBlocks();
         for(Block b : g.getBlocks()){
             System.out.println("Blocco: "+b.toString());
@@ -222,6 +285,7 @@ public class Backtracking extends Problema<Cell, Integer> {
                 System.out.println("Celle: "+cell.toString());
             }
         }
-        g.risolvi();
+        Backtracking back = new Backtracking(g);
+        back.risolvi(3);
     }
 }
