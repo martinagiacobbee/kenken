@@ -9,7 +9,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -118,7 +117,6 @@ public class GridView extends JFrame {
                                 }
                                 constraints = num;
                                 config(num);
-                                //creaBlocco(caselle,risultato, operando);
                             }
                         });
                     }
@@ -136,7 +134,6 @@ public class GridView extends JFrame {
 
     public void loadGamePage() {
         //Finestra di gioco
-
         getContentPane().removeAll(); // Rimuovi tutto il contenuto attuale dalla finestra
         JLayeredPane p = new JLayeredPane();
         p.setVisible(true);
@@ -238,6 +235,7 @@ public class GridView extends JFrame {
         JButton getValue = new JButton("Set number of solutions");
         getValue.setBounds(550, 470, 200, 50);
 
+
         getValue.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -295,7 +293,7 @@ public class GridView extends JFrame {
                 p.add(casella, JLayeredPane.DEFAULT_LAYER);
             }
         }
-        highlightBlocks(g.getBlocks(),p); //non c'è bisogno di far mediare il controller
+        highlightBlocks(g.getBlocks(),p);
 
         JButton check = new JButton("check");
         check.setBounds(600, 180, 100, 50);
@@ -414,11 +412,11 @@ public class GridView extends JFrame {
             label.setBounds(320, 100, 400, 30);
             p.add(label);
 
-            JTextField operando = new JTextField("inserisci l'operatore e premi invio(+,-,/ or *)");
+            JTextField operando = new JTextField("inserisci l'operatore e premi invio(+,-, / or *)");
             operando.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusGained(FocusEvent e) {
-                    if (operando.getText().equals("inserisci l'operatore e premi invio(+,-,/ or *)")) {
+                    if (operando.getText().equals("inserisci l'operatore e premi invio(+,-, / or *)")) {
                         operando.setText("");
                     }
                 }
@@ -505,7 +503,8 @@ public class GridView extends JFrame {
 
     public static void main(String[] args) {
 
-        Grid grid = new Grid(6);
+        Grid grid = new Grid(4);
+
         GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }

@@ -16,28 +16,6 @@ public class MulBlock extends Block implements Serializable {
         this.constraint = constraint;
     }
 
-    public String toString(){
-        return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
-    }
-
-    public void addCell(Cell cell) {
-        this.cells.add(cell);
-    }
-
-    public String getOperator(){
-        return this.op;
-    }
-
-    public void removeCell(Cell cell){
-        this.cells.remove(cell);
-    }
-
-    public void removeAll(){
-        this.cells.clear();
-    }
-
-
-
     @Override
     public boolean isSatisfied(int[][] grid) {
         int product = 1;
@@ -77,11 +55,6 @@ public class MulBlock extends Block implements Serializable {
     }
 
     @Override
-    public void setResult(int result) {
-        this.result = result;
-    }
-
-    @Override
     public List<Cell> getCells() {
         return cells;
     }
@@ -90,5 +63,16 @@ public class MulBlock extends Block implements Serializable {
     public void setCells(List<Cell> cells) {
         this.cells = new ArrayList<>(cells);
     }
+
+    @Override
+    public String toString(){
+        return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
+    }
+
+    @Override
+    public String getOperator(){
+        return this.op;
+    }
+
 }
 

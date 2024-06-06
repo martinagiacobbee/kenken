@@ -16,34 +16,16 @@ public class SumBlock extends Block implements Serializable {
         this.constraint = constraint;
     }
 
+    @Override
     public String toString(){
         return "Blocco "+this.getClass()+" con vincoli: "+this.constraint+", "+this.result;
-    }
-
-    public void addCell(Cell cell) {
-        this.cells.add(cell);
-    }
-
-    public void removeCell(Cell cell){
-        this.cells.remove(cell);
-    }
-
-    public void removeAll(){
-        cells.clear();
-    }
-
-
-    @Override
-    public void setResult(int result) {
-        this.result = result;
     }
 
     public boolean isSatisfied(int[][] grid) {
         int sum = 0;
         for (Cell cell : cells) {
-            sum += grid[cell.getRow()][cell.getCol()];
-            //System.out.println(grid[cell.getRow()][cell.getCol()]);
             if(!checkGrid(cell, grid)) return false;
+            sum += grid[cell.getRow()][cell.getCol()];
         }
         return sum == result;
     }
@@ -71,6 +53,7 @@ public class SumBlock extends Block implements Serializable {
         return this.constraint;
     }
 
+    @Override
     public String getOperator(){
         return this.op;
     }
