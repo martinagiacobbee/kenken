@@ -7,6 +7,7 @@ import view.GridView;
 
 import javax.swing.*;
 import java.io.*;
+import java.util.LinkedList;
 
 public class GameController implements Serializable {
     private Grid grid; //modello
@@ -107,8 +108,10 @@ public class GameController implements Serializable {
         grid.clear();
     }
 
-    public int[][] solve(){
-        return this.grid.risolvi();
+    public LinkedList<Grid> solve(int max){
+        //return this.grid.risolvi();
+        return this.grid.risolvi(max);
+
     }
 
     public void reset(){

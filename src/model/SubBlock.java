@@ -44,6 +44,18 @@ public class SubBlock extends Block implements Serializable {
 
     public boolean isSatisfied(int[][] grid) {
 
+        int i=0;
+        Cell cellX = cells.get(i);
+        Cell cellY = cells.get(i+1);
+
+        int x = Math.abs(grid[cellX.getRow()][cellX.getCol()]);
+        int y = Math.abs(grid[cellY.getRow()][cellY.getCol()]);
+
+        if(x-y == result || y-x == result) return true;
+        return false;
+
+
+        /*
         Cell first = cells.getFirst();
         int sub = grid[first.getRow()][first.getCol()];
         for(int i=1; i<cells.size(); i++){
@@ -51,7 +63,7 @@ public class SubBlock extends Block implements Serializable {
             sub-=value;
             if(!checkGrid(cells.get(i), grid)) return false;
         }
-        return sub == result;
+        return Math.abs(sub) == result;*/
     }
 
     private boolean checkGrid(Cell cell, int[][] grid) {
