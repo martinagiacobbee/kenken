@@ -36,7 +36,7 @@ public class SubBlock extends Block implements Serializable {
         int x = Math.abs(grid[cellX.getRow()][cellX.getCol()]);
         int y = Math.abs(grid[cellY.getRow()][cellY.getCol()]);
 
-t
+
         if(x-y == result || y-x == result) return true;
         return false;
 

@@ -124,11 +124,6 @@ public class Backtracking implements Problema<Cell, Integer> {
         return size;
     }
 
-    private void setAllCellsInValue(Block b, int value){
-        for (Cell c : b.getCells()) {
-            soluzione[c.getRow()][c.getCol()] = value;
-        }
-    }
 
     @Override
     public boolean assegnabile(Integer scelta, Cell puntoDiScelta) {

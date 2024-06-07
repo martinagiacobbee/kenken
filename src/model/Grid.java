@@ -1,6 +1,5 @@
 package model;
 
-//import backtracking.Backtracking;
 import backtracking.Backtracking;
 import java.io.*;
 import java.util.ArrayList;
@@ -109,12 +108,9 @@ public class Grid implements Serializable {
             }
             else blockSize = rand.nextInt(4) + 1; // Dimensione del blocco tra 1 e 5
 
-            System.out.println("Blocksize: "+blockSize);
             int limite = (rimanenti/blocchiRimanenti)+1;
-            System.out.println("Limite: "+limite);
             while(blockSize>= limite){
                 blockSize = rand.nextInt(4) + 1; //rigenera finchè il numero di celle non è accettabile
-                System.out.println("Blocksize rigenerato: "+blockSize);
             }
             List<Cell> cells = new ArrayList<>();
 
@@ -137,7 +133,6 @@ public class Grid implements Serializable {
             while (cells.size() < blockSize) {
                 iter++;
                 if(iter>20){
-                    System.out.println("Sono oberato.");
                     rimanenti=1; //assunzione forte
                     break;
                 }
@@ -174,7 +169,7 @@ public class Grid implements Serializable {
             block.setCells(cells);
             rimanenti -= blockSize;
         }
-        System.out.println("Ho terminato l'inizializzazione.");
+
 
         for (Block b : blocks) {
             if(rimanenti != 0 && !b.getOperator().equals("-") && !b.getOperator().equals("/")) {
@@ -197,10 +192,9 @@ public class Grid implements Serializable {
     private void expandBlock(Block block, boolean[][] occupied, List<Cell> cells) {
         int dim = block.getCells().size()+rimanenti;
         int lunghezza = block.getCells().size();
-        System.out.println("Lunghezza: "+lunghezza+" Rimanenti: "+rimanenti);
 
         do{
-            //System.out.println("Lunghezza: "+lunghezza);
+
             Cell lastCell = cells.get(cells.size() - 1);
             int newRow = lastCell.getRow();
             int newCol = lastCell.getCol();
@@ -212,8 +206,7 @@ public class Grid implements Serializable {
                     cell.setBlock(block);
                     block.getCells().add(cell);
                     lunghezza++;
-                    System.out.println("Ho espanso sulla riga");
-                    //break;
+
                 }
                 else if(!occupied[i][newCol]) {
                     Cell cell = new Cell(i, newCol);
@@ -221,8 +214,7 @@ public class Grid implements Serializable {
                     cell.setBlock(block);
                     block.getCells().add(cell);
                     lunghezza++;
-                    System.out.println("Ho espanso sulla colonna");
-                    //break;
+
                 }
             }
             //non c'erano blocchi vicini disponibili: espando dove capita
@@ -234,7 +226,6 @@ public class Grid implements Serializable {
                         occupied[i][j] = true;
                         block.getCells().add(cell);
                         lunghezza++;
-                        System.out.println("Ho espanso per disperazione");
                     }
                 }
             }

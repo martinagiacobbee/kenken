@@ -294,7 +294,6 @@ public class GridView extends JFrame {
 
         // Inizializzazione dei blocchi scelti dall'utente
         if (round > 0) {
-            System.out.println(round);
             JLabel label = new JLabel("Numero di blocchi rimanenti da inizializzare: " + round);
             label.setBounds(320, 100, 400, 30);
             p.add(label);
@@ -390,7 +389,7 @@ public class GridView extends JFrame {
 
     public static void main(String[] args) {
 
-        Grid grid = new Grid(2);
+        Grid grid = new Grid(3);
         GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }

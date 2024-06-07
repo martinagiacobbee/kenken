@@ -88,7 +88,7 @@ public class TestResolver {
 
 
     @Test
-    public void testResolver(){
+    public void testBacktracking(){
         Grid g = new Grid(2);
         Block block = Block.createBlock("+", 3);
         Block block2 = Block.createBlock("-", 1);

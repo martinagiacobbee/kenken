@@ -68,7 +68,6 @@ public class GameController implements Serializable {
 
     public void initializeBlocks() {
         grid.createRandomBlocks();
-        System.out.println(this.grid.toString());
         gridView.loadGamePage();
 
     }
@@ -79,10 +78,8 @@ public class GameController implements Serializable {
 
     public boolean check() {
         for (Block b : grid.getBlocks()) {
-            System.out.println(b.toString());
             if (!b.isSatisfied(this.grid.getGrid())) {
                 grid.clear();
-                System.out.println("Non soddisfatto");
                 return false;
             }
         }
@@ -91,7 +88,6 @@ public class GameController implements Serializable {
 
     public void setGridValue(int row, int col, int value) {
         grid.setGridValue(row, col, value);
-        System.out.println("Valore impostato sulla griglia: " + value + " in (" + row + "," + col + ")");
     }
 
     public void resetGrid() {
