@@ -21,6 +21,7 @@ public class GridView extends JFrame {
     private int constraints; //numero di blocchi scelto dall'utente
     private Random rand = new Random();
     private int maxSol;
+    private GridPanelNavigator gpn;
 
 
     public GridView(int[][] grid) {
@@ -208,7 +209,7 @@ public class GridView extends JFrame {
                 controller.resetGrid();
 
                LinkedList<Grid> soluzioni = controller.solve(maxSol);
-                //LinkedList<int [][]> soluzioni = controller.solve();
+
                 if(!(soluzioni.isEmpty())) showSolution(soluzioni);
                 else{
                     JOptionPane.showMessageDialog(p, "Nessuna soluzione disponibile", "Dialog",
@@ -255,120 +256,9 @@ public class GridView extends JFrame {
 
     }
 
-    public void loadViewFromFile(Grid g){
-
-        getContentPane().removeAll(); // Rimuovi tutto il contenuto attuale dalla finestra
-        JLayeredPane p = new JLayeredPane();
-        p.setVisible(true);
-
-        constrainedGrid = new JTextField[gridSize][gridSize];
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                JTextField casella = new JTextField();
-                constrainedGrid[i][j] = casella;
-                int row= i;
-                int col = j;
-                casella.setFont(new Font(casella.getFont().getName(), Font.PLAIN, 20));
-                casella.setHorizontalAlignment(JTextField.CENTER);
-                casella.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            int num = Integer.parseInt(casella.getText());
-                            casella.setEditable(false);
-
-                            //imposto i valori sulla griglia della view e ne chiamo l'aggiunta su quella del model tramite controller
-                            grid[row][col] = Integer.parseInt(casella.getText());
-                            controller.setGridValue(row,col, grid[row][col]);
-                        } catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(p, "Inserisci un numero valido.", "Dialog",
-                                    JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                });
-                casella.setBounds(100 - (gridSize * 2) + j * 300 / gridSize, 160 - (gridSize * 2) + i * 300 / gridSize, 300 / gridSize, 300 / gridSize);
-                p.add(casella, JLayeredPane.DEFAULT_LAYER);
-            }
-        }
-        highlightBlocks(g.getBlocks(),p);
-
-        JButton check = new JButton("check");
-        check.setBounds(600, 180, 100, 50);
-        Color checkColor = check.getBackground();
-        check.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(controller.check()){
-                    check.setBackground(Color.GREEN);
-                    revalidate();
-                    repaint();
-
-                }else{
-                    check.setBackground(Color.RED);
-                    revalidate();
-                    repaint();
-                    controller.resetGrid(); //elimino tutto: ricomincia
-                }
-            }
-
-        });
-
-        JButton pulisci = new JButton("clear all");
-        pulisci.setBounds(600, 240, 100, 50);
-        pulisci.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                resetGrid();
-                check.setBackground(checkColor);
-                controller.resetGrid();
-            }
-        });
-
-        JButton soluzione = new JButton("solve");
-        soluzione.setBounds(600, 300, 100, 50);
-        soluzione.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-               resetGrid(); //elimino tutta la griglia: va risolto da zero
-               controller.resetGrid();
-
-                LinkedList<Grid> soluzioni = controller.solve(maxSol);
-
-               if(!(soluzioni.isEmpty())) showSolution(soluzioni);
-               else{
-                    JOptionPane.showMessageDialog(p, "Nessuna soluzione disponibile", "Dialog",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        JSpinner spinner = new JSpinner();
-        spinner.setBounds(600, 360, 100, 50);
-        spinner.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-        JButton getValue = new JButton("Set number of solutions");
-        getValue.setBounds(550, 470, 200, 50);
-
-        getValue.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int spinnerValue = (Integer) spinner.getValue();
-                maxSol = spinnerValue;
-            }
-        });
-
-        add(spinner);
-        add(getValue);
-        add(check);
-        add(pulisci);
-        add(soluzione);
-        add(p);
-        revalidate();
-        repaint();
-        setVisible(true);
-    }
 
     public void showSolution(LinkedList<Grid> soluzioni) {
-        GridPanelNavigator gpn = new GridPanelNavigator(soluzioni);
+         gpn = new GridPanelNavigator(soluzioni);
         revalidate();
         repaint();
     }
@@ -500,7 +390,7 @@ public class GridView extends JFrame {
 
     public static void main(String[] args) {
 
-        Grid grid = new Grid(4);
+        Grid grid = new Grid(2);
         GridView gridView = new GridView(grid.getGrid());
         GameController controller = new GameController(grid, gridView);
     }

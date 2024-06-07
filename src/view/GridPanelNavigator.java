@@ -19,7 +19,7 @@ public class GridPanelNavigator {
 
         this.soluzioni = soluzioni;
         frame = new JFrame("Soluzioni");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 400);
 
         cardLayout = new CardLayout();

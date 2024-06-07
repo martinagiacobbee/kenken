@@ -17,7 +17,7 @@ public class GameController implements Serializable {
         this.grid = grid;
         this.gridView = gridView;
         this.gridView.setController(this);
-        //this.grid.addObserver(gridView); //potenzialmente inutile: il controller fa tutto
+
     }
 
     public void uploadFile() {
@@ -47,8 +47,8 @@ public class GameController implements Serializable {
         //carica grid
         downloadFile(f);
 
-        //invia tutto alla vista
-        gridView.loadViewFromFile(grid);
+        //ripristino la vista di gioco
+        gridView.loadGamePage();
     }
 
     private void downloadFile(File nomeFile) {
@@ -70,9 +70,8 @@ public class GameController implements Serializable {
         grid.createRandomBlocks();
         System.out.println(this.grid.toString());
         gridView.loadGamePage();
-        //grid.notifyObservers();
-    }
 
+    }
 
     public void setConstraints(JLayeredPane p) {
         gridView.highlightBlocks(grid.getBlocks(), p);

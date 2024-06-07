@@ -14,7 +14,6 @@ public class Grid implements Serializable {
     private int[][] grid;
     private List<Block> blocks;
     private Backtracking resolver;
-
     private int rimanenti;
 
 
@@ -37,10 +36,6 @@ public class Grid implements Serializable {
         }
 
         return sb.toString();
-    }
-
-    public int getGridValue(int row, int col) {
-        return this.grid[row][col];
     }
 
     public Cell getCell(int row, int col) {
@@ -189,7 +184,7 @@ public class Grid implements Serializable {
     private void initGrid() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                grid[i][j] = -1;
+                grid[i][j] = 0;
             }
         }
     }

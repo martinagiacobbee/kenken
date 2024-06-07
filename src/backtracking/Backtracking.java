@@ -13,7 +13,6 @@ public class Backtracking implements Problema<Cell, Integer> {
     private int size;
     private int[][] soluzione;
     private ArrayList<Cell> cells;
-    private HashMap<Block, LinkedList<Cell>> blocchi;
     private boolean[][] initialized;
     private LinkedList<Grid> solList;
 
