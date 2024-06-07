@@ -98,6 +98,7 @@ public class GameController implements Serializable {
         grid.clear();
     }
 
+
     public LinkedList<Grid> solve(int max) {
         return this.grid.risolvi(max);
 

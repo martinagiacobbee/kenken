@@ -1,5 +1,6 @@
 package model;
 
+//import backtracking.Backtracking;
 import backtracking.Backtracking;
 import java.io.*;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Grid implements Serializable {
         this.grid = new int[size][size];
         this.rimanenti= size*size;
         this.blocks = new LinkedList<Block>();
+
     }
 
     public String toString() {
@@ -85,12 +87,14 @@ public class Grid implements Serializable {
         return blocks;
     }
 
+
     public LinkedList<Grid> risolvi(int max) {
         resolver = new Backtracking(this);
         resolver.risolvi(max);
         return resolver.getSolList();
 
     }
+
 
     public void createRandomBlocks() {
         boolean[][] occupied = new boolean[size][size];
