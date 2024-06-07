@@ -9,6 +9,7 @@ import java.util.*;
 
 public class Backtracking implements Problema<Cell, Integer> {
     private Grid grid;
+    private int i = 0, scelta = 0;
     private int size;
     private int[][] soluzione;
     private ArrayList<Cell> cells;
