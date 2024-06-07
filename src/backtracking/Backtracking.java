@@ -9,7 +9,6 @@ import java.util.*;
 
 public class Backtracking implements Problema<Cell, Integer> {
     private Grid grid;
-    private int i = 0, scelta = 0;
     private int size;
     private int[][] soluzione;
     private ArrayList<Cell> cells;
@@ -74,20 +73,7 @@ public class Backtracking implements Problema<Cell, Integer> {
     public boolean ultimoPuntoDiScelta(Cell ps) {
             if(nonInizializzati()>0) return false;
             return true;
-        /*for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
-                if (!initialized[i][j]) {
-                    int row = i;
-                    int col = j;
-                    for (Cell c : cells) {
-                        if (c.getRow() == row && c.getCol() == col) {
-                            return c.equals(ps);
-                        }
-                    }
-                }
-            }
-        }
-        return false;*/
+
     }
 
     private int nonInizializzati(){
