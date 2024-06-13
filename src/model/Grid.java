@@ -22,7 +22,16 @@ public class Grid implements Serializable {
         this.grid = new int[size][size];
         this.rimanenti= size*size;
         this.blocks = new LinkedList<Block>();
+    }
 
+    public Grid(){
+        this.blocks = new LinkedList<Block>();
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+        this.grid = new int[size][size];
+        this.rimanenti= size*size;
     }
 
     public String toString() {

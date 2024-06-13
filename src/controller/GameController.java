@@ -17,7 +17,6 @@ public class GameController implements Serializable {
         this.grid = grid;
         this.gridView = gridView;
         this.gridView.setController(this);
-
     }
 
     public void uploadFile() {
@@ -40,6 +39,11 @@ public class GameController implements Serializable {
 
 
     public void createNewGameClicked() {
+        gridView.loadChoosingPage();
+    }
+
+    public void setSize(int val){
+        grid.setSize(val);
         gridView.loadSecondPage();
     }
 
@@ -48,14 +52,18 @@ public class GameController implements Serializable {
         downloadFile(f);
 
         //ripristino la vista di gioco
+        gridView.updateValues(grid.getSize());
         gridView.loadGamePage();
+
     }
+
 
     private void downloadFile(File nomeFile) {
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomeFile));
             this.grid = (Grid) ois.readObject();
             ois.close();
+
         } catch (IOException | ClassNotFoundException e) {
             return;
         }

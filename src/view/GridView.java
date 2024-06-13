@@ -18,15 +18,14 @@ public class GridView extends JFrame {
     private JTextField[][] constrainedGrid;
     private GameController controller;
     private int[][] grid;
+    private int size;
     private int constraints; //numero di blocchi scelto dall'utente
     private Random rand = new Random();
     private int maxSol;
     private GridPanelNavigator gpn;
 
 
-    public GridView(int[][] grid) {
-        this.gridSize = grid.length;
-        this.grid = grid;
+    public GridView() {
         this.maxSol=1;
         setTitle("KenKen Solver");
         setSize(900, 700);
@@ -39,6 +38,7 @@ public class GridView extends JFrame {
     }
 
     public void initGamePage() {
+        getContentPane().removeAll();
         JPanel panel = new JPanel();
         panel.setLayout(null);
         panel.setVisible(true);
@@ -131,9 +131,93 @@ public class GridView extends JFrame {
         setVisible(true);
     }
 
+    public void loadChoosingPage(){
+        getContentPane().removeAll();
+        JLayeredPane p = new JLayeredPane();
+        p.setLayout(new GridLayout(2, 3));
+        p.setVisible(true);
+
+        JButton grid2 = new JButton("2x2");
+        grid2.setBackground(new Color(255, 204, 204));
+        grid2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateValues(2);
+                controller.setSize(2);
+
+            }
+        });
+
+        JButton grid3 = new JButton("3x3");
+        grid3.setBackground(new Color(255, 229, 204));
+        grid3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateValues(3);
+                controller.setSize(3);
+            }
+        });
+
+        JButton grid4 = new JButton("4x4");
+        grid4.setBackground(new Color(255, 255, 204));
+        grid4.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateValues(4);
+                controller.setSize(4);
+            }
+        });
+
+        JButton grid5 = new JButton("5x5");
+        grid5.setBackground(new Color(204, 255, 204));
+        grid5.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateValues(5);
+                controller.setSize(5);
+            }
+        });
+
+        JButton grid6 = new JButton("6x6");
+        grid6.setBackground(new Color(204, 229, 255));
+        grid6.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateValues(6);
+                controller.setSize(6);
+            }
+        });
+
+        JButton grid7 = new JButton("7x7");
+        grid7.setBackground(new Color(229, 204, 255));
+        grid7.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateValues(7);
+                controller.setSize(7);
+            }
+        });
+
+        p.add(grid2);
+        p.add(grid3);
+        p.add(grid4);
+        p.add(grid5);
+        p.add(grid6);
+        p.add(grid7);
+
+        add(p);
+        setVisible(true);
+    }
+
+    public void updateValues(int val){
+        this.size=val;
+        this.gridSize = size;
+        this.grid = new int[gridSize][gridSize];
+    }
+
     public void loadGamePage() {
         //Finestra di gioco
-        getContentPane().removeAll(); // Rimuovi tutto il contenuto attuale dalla finestra
+        getContentPane().removeAll();
         JLayeredPane p = new JLayeredPane();
         p.setVisible(true);
 
@@ -228,6 +312,7 @@ public class GridView extends JFrame {
                                                 JOptionPane.INFORMATION_MESSAGE);
                                     }
                                 });
+
         JSpinner spinner = new JSpinner();
         spinner.setBounds(600, 420, 100, 50);
         spinner.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
@@ -243,6 +328,16 @@ public class GridView extends JFrame {
             }
         });
 
+        JButton back = new JButton("Go back");
+        back.setBounds(600, 560, 100, 50);
+        back.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                initGamePage();
+            }
+        });
+
+        add(back);
         add(spinner);
         add(getValue);
         add(upload);
@@ -253,9 +348,7 @@ public class GridView extends JFrame {
         revalidate();
         repaint();
         setVisible(true);
-
     }
-
 
     public void showSolution(LinkedList<Grid> soluzioni) {
          gpn = new GridPanelNavigator(soluzioni);
@@ -389,8 +482,8 @@ public class GridView extends JFrame {
 
     public static void main(String[] args) {
 
-        Grid grid = new Grid(3);
-        GridView gridView = new GridView(grid.getGrid());
+        Grid grid = new Grid();
+        GridView gridView = new GridView();
         GameController controller = new GameController(grid, gridView);
     }
 }
