@@ -61,11 +61,17 @@ public class GameController implements Serializable {
     private void downloadFile(File nomeFile) {
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomeFile));
-            this.grid = (Grid) ois.readObject();
+
+            Grid loadedGrid = (Grid) ois.readObject();
             ois.close();
 
+            this.grid.setSize(loadedGrid.getSize());
+            for(Block block : loadedGrid.getBlocks()) {
+                this.grid.addBlock(block);
+            }
+
         } catch (IOException | ClassNotFoundException e) {
-            return;
+           e.printStackTrace();
         }
     }
 

@@ -10,6 +10,7 @@ import java.util.Random;
 //model
 public class Grid implements Serializable {
     private Random rand = new Random();
+    private static final long serialVersionUID = 7800968079090845654L;
     private int size;
     private int[][] grid;
     private List<Block> blocks;
