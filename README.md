@@ -29,6 +29,9 @@ This Java implementation includes both a **Graphical User Interface (GUI)** and 
 ### 4. **Mediator Pattern**
    - Ensures loose coupling between UI, the solver, and grid. The mediator coordinates actions without these components needing to know about each other directly.
 
+### Prerequisites
+Java 8 or later versions
+
 ## 🚦 How to Run the Project
 
 The project can be easily started using the **GridView** class, which includes a `main` method with all the necessary initial configurations.
@@ -40,5 +43,3 @@ public class GridView {
     }
 }
 
-### Prerequisites
-Java 8 or later versions
